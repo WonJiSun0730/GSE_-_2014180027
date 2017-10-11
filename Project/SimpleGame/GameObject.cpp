@@ -14,6 +14,7 @@ CGameObject::~CGameObject()
 CGameObject::CGameObject(Position* pos, float* size, Color* rgba)
 	: m_Pos(*pos), m_fSize(*size), m_Color(*rgba), m_fSpeed(0.1)
 {
+	m_tempPos = m_Pos;
 }
 
 void CGameObject::initialize(void)
@@ -22,19 +23,18 @@ void CGameObject::initialize(void)
 
 int CGameObject::Update(void)
 {
-	/*
-	static float angle = 0.f;
+	//È¸Àü³îÀÌ
+	/*static float angle = 0.f;
 	angle+= m_fSpeed;
 
 	if (angle >= 360.f)
-		angle = 0.f;
+		angle = 0.f;*/
 
-	m_Pos.fX = 100 * cos(3.141592 / 180 * angle);
-	m_Pos.fY = 100 * sin(3.141592 / 180 * angle);
-	*/
-
-	m_Pos.fX += m_fSpeed * (rand() % 3 - 1);
-	m_Pos.fY += m_fSpeed * (rand() % 3 - 1);
+	//m_Pos.fX = m_tempPos.fX + 100 * cos(3.141592 / 180 * angle);
+	//m_Pos.fY = m_tempPos.fY + 100 * sin(3.141592 / 180 * angle);
+	
+	m_Pos.fX += m_fSpeed * (rand() % 3 - 1) * 5;
+	m_Pos.fY += m_fSpeed * (rand() % 3 - 1) * 5;
 	return 0;
 }
 

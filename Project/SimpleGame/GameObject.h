@@ -24,5 +24,7 @@ private:
 	Color		m_Color;
 
 	float		m_fSpeed;
+
+	Position		m_tempPos;
 };
 

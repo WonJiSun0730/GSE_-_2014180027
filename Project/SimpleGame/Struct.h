@@ -43,6 +43,6 @@ typedef struct Color {
 	Color(float fRed, float fGreen, float fBlue,float Alpha = 1)
 		: fR(fRed), fG(fGreen), fB(fBlue), fAlpha(Alpha)
 	{
-
+		
 	}
 }RGBA;
