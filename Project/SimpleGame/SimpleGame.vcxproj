@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="SceneMgr.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Struct.h" />
     <ClInclude Include="targetver.h" />
@@ -164,6 +165,7 @@
   <ItemGroup>
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="SceneMgr.cpp" />
     <ClCompile Include="SimpleGame.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

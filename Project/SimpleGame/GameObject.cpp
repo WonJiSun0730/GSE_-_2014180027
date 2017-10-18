@@ -12,29 +12,24 @@ CGameObject::~CGameObject()
 }
 
 CGameObject::CGameObject(Position* pos, float* size, Color* rgba)
-	: m_Pos(*pos), m_fSize(*size), m_Color(*rgba), m_fSpeed(0.1)
+	: m_Pos(*pos), m_fSize(*size), m_Color(*rgba), m_fSpeed(0.03)
 {
-	m_tempPos = m_Pos;
+	initialize();
 }
 
 void CGameObject::initialize(void)
 {
+	do {
+		m_Dir.fX = float(rand() % 3 - 1);
+		m_Dir.fY = float(rand() % 3 - 1);
+	} while (m_Dir.fX == 0 && m_Dir.fY == 0);
+	//아니면 음...중앙각도를 중심으로다가 랜덤으로 이동하게?
 }
 
 int CGameObject::Update(void)
 {
-	//회전놀이
-	/*static float angle = 0.f;
-	angle+= m_fSpeed;
-
-	if (angle >= 360.f)
-		angle = 0.f;*/
-
-	//m_Pos.fX = m_tempPos.fX + 100 * cos(3.141592 / 180 * angle);
-	//m_Pos.fY = m_tempPos.fY + 100 * sin(3.141592 / 180 * angle);
-	
-	m_Pos.fX += m_fSpeed * (rand() % 3 - 1) * 5;
-	m_Pos.fY += m_fSpeed * (rand() % 3 - 1) * 5;
+	m_Pos.fX += m_fSpeed * m_Dir.fX;
+	m_Pos.fY += m_fSpeed * m_Dir.fY;
 	return 0;
 }
 

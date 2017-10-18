@@ -18,13 +18,14 @@ public:
 	Position* GetPos(void);
 	float* GetSize(void);
 	Color* GetColor(void);
+
+	//void SetCollision(void);
 private:
 	Position	m_Pos;
 	float		m_fSize;
 	Color		m_Color;
 
 	float		m_fSpeed;
-
-	Position		m_tempPos;
+	Position		m_Dir;
 };
 

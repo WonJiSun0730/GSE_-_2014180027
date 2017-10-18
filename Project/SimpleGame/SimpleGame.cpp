@@ -15,53 +15,17 @@ but WITHOUT ANY WARRANTY.
 
 #include "GameObject.h"
 
-#include <list>
-
-using namespace std;
-
 Renderer *g_Renderer = NULL;
 
-////임시 선언 변수
-//Position pos = Position(50.f, 50.f);
-//float size1= 10.f;
-//Color rgba= Color(0.f,1.f,1.f,1.f);
-//CGameObject *gObj = new CGameObject(&pos, &size1, &rgba);
-//
-//
-//Position pos2 = Position(-50.f, -50.f);
-//float size2 = 20.f;
-//Color rgba2 = Color(0.f, 0.f, 1.f, 1.f);
-//
-//CGameObject *gObj2 = new CGameObject(&pos2, &size2, &rgba2);
-
-list<CGameObject*> Objlist;
+CSceneMgr*	SceneManager = new CSceneMgr;
 
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
-	// Renderer Test
-	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-
-	////static 
-	//gObj->Update();
-	//gObj2->Update();
-
-	//gObj->Render();
-	//gObj2->Render();
-
-
-	list<CGameObject*>::iterator iter = Objlist.begin();
-	list<CGameObject*>::iterator iter_end = Objlist.end();
-
-	for (; iter != iter_end;)
-	{
-		(*iter)->Update();
-		(*iter)->Render();
-			++iter;
-	}
-
+	SceneManager->Render();
+	SceneManager->Update();
 
 	glutSwapBuffers();
 }
@@ -76,15 +40,15 @@ void MouseInput(int button, int state, int x, int y)
 	RenderScene();
 
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-	{
+	{//다운만 체크하면 ui에 중복성이 생긴다...나중에 분기를 나눠라
 		std::cout << "마우스 입력 : 객체 추가합니다." << endl;
 		std::cout << x << "," << y << endl;
 		Position Pos = Position(x - 250, -(y - 250));
 		float fsize = float((rand() % 5 + 2) * 5);
-		Color RGBA = Color( float(rand() % 255) / 255.f , float(rand() % 255) / 255.f, float(rand() % 255) / 255.f);
+		Color RGBA = Color(1.f ,1.f ,1.f);
 		CGameObject *Obj = new CGameObject(&Pos,&fsize,&RGBA);
 
-		Objlist.push_back(Obj);
+		SceneManager->PushObj(Obj);
 	}
 }
 
@@ -134,15 +98,14 @@ int main(int argc, char **argv)
 
 	delete g_Renderer;
 
-	list<CGameObject*>::iterator iter = Objlist.begin();
-	list<CGameObject*>::iterator iter_end = Objlist.end();
-
-	for (iter; iter != iter_end; ++iter)
+	//릴리즈
+	//CSceneMgr*	SceneManager = new CSceneMgr;
+	delete SceneManager;
+	if (SceneManager != NULL)
 	{
-		delete *iter;
+		SceneManager = NULL;
 	}
-	Objlist.clear();
-
+	int i = 0;
     return 0;
 }
 

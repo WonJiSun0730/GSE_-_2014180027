@@ -22,6 +22,9 @@
     <Filter Include="01.Struct">
       <UniqueIdentifier>{e6a5ce6f-76af-45cf-ba84-16a89dadeb92}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.SceneMgr">
+      <UniqueIdentifier>{c2fac814-ee7e-46d5-b283-52520049c7e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -42,6 +45,9 @@
     <ClInclude Include="Struct.h">
       <Filter>01.Struct</Filter>
     </ClInclude>
+    <ClInclude Include="SceneMgr.h">
+      <Filter>03.SceneMgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -55,6 +61,9 @@
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>02.GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneMgr.cpp">
+      <Filter>03.SceneMgr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
