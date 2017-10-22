@@ -20,6 +20,10 @@ public:
 	Color* GetColor(void);
 
 	//void SetCollision(void);
+	void setCollision(bool Collstate)
+	{
+		m_bCollision = Collstate;
+	}
 private:
 	Position	m_Pos;
 	float		m_fSize;
@@ -27,5 +31,7 @@ private:
 
 	float		m_fSpeed;
 	Position		m_Dir;
+
+	bool		m_bCollision;
 };
 

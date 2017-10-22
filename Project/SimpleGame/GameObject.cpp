@@ -24,12 +24,23 @@ void CGameObject::initialize(void)
 		m_Dir.fY = float(rand() % 3 - 1);
 	} while (m_Dir.fX == 0 && m_Dir.fY == 0);
 	//아니면 음...중앙각도를 중심으로다가 랜덤으로 이동하게?
+
+	m_bCollision = false;
 }
 
 int CGameObject::Update(void)
 {
 	m_Pos.fX += m_fSpeed * m_Dir.fX;
 	m_Pos.fY += m_fSpeed * m_Dir.fY;
+
+	if (m_bCollision && m_Color.fG == 1 && m_Color.fB == 1)
+	{
+		m_Color.fG = 0, m_Color.fB = 0;
+	}
+	if (!m_bCollision && m_Color.fG == 0 && m_Color.fB == 0)
+	{
+		m_Color.fG = 1, m_Color.fB = 1;
+	}
 	return 0;
 }
 
