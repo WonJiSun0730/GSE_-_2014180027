@@ -17,15 +17,25 @@ but WITHOUT ANY WARRANTY.
 
 CSceneMgr*	SceneManager = NULL;
 
+DWORD fPrevTime = 0.f;
+float fElapsedTime = 0.f;
+
 void RenderScene(void)
 {
+	SceneManager->SetElapsedTime(fElapsedTime);
+	fPrevTime = timeGetTime();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
 	SceneManager->Update();
-	SceneManager->Render();
+	SceneManager->Render();	
 
 	glutSwapBuffers();
+
+	DWORD fCurTime = timeGetTime();
+
+	fElapsedTime = float(fCurTime - fPrevTime) * 0.001f;
 }
 
 void Idle(void)

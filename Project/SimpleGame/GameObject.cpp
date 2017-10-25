@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameObject.h"
 
+float CGameObject::m_fElapsedTime = 0.f;
 
 CGameObject::CGameObject()
 {
@@ -12,7 +13,7 @@ CGameObject::~CGameObject()
 }
 
 CGameObject::CGameObject(Position* pos, float* size, Color* rgba)
-	: m_Pos(*pos), m_fSize(*size), m_Color(*rgba), m_fSpeed(0.f)
+	: m_Pos(*pos), m_fSize(*size), m_Color(*rgba), m_fSpeed(100.f)
 {
 	initialize();
 }
@@ -30,8 +31,8 @@ void CGameObject::initialize(void)
 
 int CGameObject::Update(void)
 {
-	m_Pos.fX += m_fSpeed * m_Dir.fX;
-	m_Pos.fY += m_fSpeed * m_Dir.fY;
+	m_Pos.fX += m_fSpeed * m_fElapsedTime * m_Dir.fX;
+	m_Pos.fY += m_fSpeed * m_fElapsedTime * m_Dir.fY;
 
 	if (m_bCollision && m_Color.fG == 1 && m_Color.fB == 1)
 	{
@@ -57,7 +58,7 @@ int CGameObject::Update(void)
 
 void CGameObject::Render(void)
 {
-	//g_Renderer->DrawSolidRect(m_Pos.fX, m_Pos.fY, 0, m_fSize, m_Color.fR, m_Color.fG, m_Color.fB, m_Color.fAlpha);
+
 }
 
 void CGameObject::Release(void)
@@ -94,6 +95,16 @@ Color* CGameObject::GetColor(void)
 	return &m_Color;
 }
 
+void CGameObject::setCollision(bool Collstate)
+{
+	m_bCollision = Collstate;
+}
+
+bool CGameObject::getCollision(void)
+{
+	return m_bCollision;
+}
+
 bool CGameObject::CollisionCheck(CGameObject* ObjInfo)
 {
 	//left보다 더 왼쪽에 있는 오른쪽
@@ -118,5 +129,10 @@ bool CGameObject::CollisionCheck(CGameObject* ObjInfo)
 		return false;
 
 	return true;
+}
+
+void CGameObject::SetElapsedTime(float fElapsedTime)
+{
+	m_fElapsedTime = fElapsedTime;
 }
 

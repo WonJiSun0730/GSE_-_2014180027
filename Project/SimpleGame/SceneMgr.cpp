@@ -114,6 +114,18 @@ void CSceneMgr::CollisionCheck_Optimi(void)
 	}
 }
 
+void CSceneMgr::SetElapsedTime(float fElapsedTime)
+{
+	for (int i = 0; i < MAXCOUNT; ++i)
+	{
+		if (m_ObjArr[i] != NULL)
+		{
+			m_ObjArr[i]->SetElapsedTime(fElapsedTime);
+			break;
+		}
+	}
+}
+
 CSceneMgr::CSceneMgr()
 	: m_Renderer(NULL)
 {

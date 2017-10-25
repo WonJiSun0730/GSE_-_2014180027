@@ -19,16 +19,11 @@ public:
 	float* GetSize(void);
 	Color* GetColor(void);
 
-	void setCollision(bool Collstate)
-	{
-		m_bCollision = Collstate;
-	}
-	bool getCollision(void)
-	{
-		return m_bCollision;
-	}
+	void setCollision(bool Collstate);
+	bool getCollision(void);
 
 	bool CollisionCheck(CGameObject* ObjInfo);
+	void SetElapsedTime(float fElapsedTime);
 private:
 	Position	m_Pos;
 	float		m_fSize;
@@ -38,5 +33,6 @@ private:
 	Position		m_Dir;
 
 	bool		m_bCollision;
+	static float		m_fElapsedTime;
 };
 

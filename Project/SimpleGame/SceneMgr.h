@@ -17,7 +17,7 @@ public:
 	void Render(void);
 	void PushObj(CGameObject* NewObj);
 	void CollisionCheck_Optimi(void);
-
+	void SetElapsedTime(float fElapsedTime);
 public:
 	CSceneMgr();
 	~CSceneMgr();
