@@ -15,17 +15,15 @@ but WITHOUT ANY WARRANTY.
 
 #include "GameObject.h"
 
-Renderer *g_Renderer = NULL;
-
-CSceneMgr*	SceneManager = new CSceneMgr;
+CSceneMgr*	SceneManager = NULL;
 
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
-	SceneManager->Render();
 	SceneManager->Update();
+	SceneManager->Render();
 
 	glutSwapBuffers();
 }
@@ -80,13 +78,8 @@ int main(int argc, char **argv)
 	{
 		std::cout << "GLEW 3.0 not supported\n ";
 	}
-
-	// Initialize Renderer
-	g_Renderer = new Renderer(500, 500);
-	if (!g_Renderer->IsInitialized())
-	{
-		std::cout << "Renderer could not be initialized.. \n";
-	}
+	//OPENGL 초기화 한 다음에 생성.
+	SceneManager = new CSceneMgr;
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
@@ -96,16 +89,11 @@ int main(int argc, char **argv)
 
 	glutMainLoop();
 
-	delete g_Renderer;
-
-	//릴리즈
-	//CSceneMgr*	SceneManager = new CSceneMgr;
 	delete SceneManager;
 	if (SceneManager != NULL)
 	{
 		SceneManager = NULL;
 	}
-	int i = 0;
     return 0;
 }
 

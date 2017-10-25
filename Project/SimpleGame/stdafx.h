@@ -7,11 +7,12 @@
 
 #include "Struct.h"
 
-#include "Renderer.h"
+//#include "Renderer.h"
 #include <list>
 
 using namespace std;
+#define MAXCOUNT 100
 
 #include "SceneMgr.h"
 
-extern Renderer *g_Renderer;	//
+//extern Renderer *g_Renderer;	//

@@ -12,18 +12,18 @@ CGameObject::~CGameObject()
 }
 
 CGameObject::CGameObject(Position* pos, float* size, Color* rgba)
-	: m_Pos(*pos), m_fSize(*size), m_Color(*rgba), m_fSpeed(0.03)
+	: m_Pos(*pos), m_fSize(*size), m_Color(*rgba), m_fSpeed(0.f)
 {
 	initialize();
 }
 
 void CGameObject::initialize(void)
 {
-	do {
-		m_Dir.fX = float(rand() % 3 - 1);
-		m_Dir.fY = float(rand() % 3 - 1);
-	} while (m_Dir.fX == 0 && m_Dir.fY == 0);
-	//아니면 음...중앙각도를 중심으로다가 랜덤으로 이동하게?
+	float rad = float(rand() % 360);
+
+	//0~1사이의 단위 벡터
+	m_Dir.fX = cos(rad * 3.141592f / 180.f);
+	m_Dir.fY = sin(rad * 3.141592f / 180.f);
 
 	m_bCollision = false;
 }
@@ -41,12 +41,23 @@ int CGameObject::Update(void)
 	{
 		m_Color.fG = 1, m_Color.fB = 1;
 	}
+
+	//만약 >> 이건 임시...입사각과 반사각을 구하자
+	if (-250.f > m_Pos.fX || m_Pos.fX > 250.f)
+	{
+		m_Dir.fX *= -1;
+	}
+	if (-250.f > m_Pos.fY || m_Pos.fY > 250.f)
+	{
+		m_Dir.fY *= -1;
+	}
+
 	return 0;
 }
 
 void CGameObject::Render(void)
 {
-	g_Renderer->DrawSolidRect(m_Pos.fX, m_Pos.fY, 0, m_fSize, m_Color.fR, m_Color.fG, m_Color.fB, m_Color.fAlpha);
+	//g_Renderer->DrawSolidRect(m_Pos.fX, m_Pos.fY, 0, m_fSize, m_Color.fR, m_Color.fG, m_Color.fB, m_Color.fAlpha);
 }
 
 void CGameObject::Release(void)
@@ -81,5 +92,31 @@ float* CGameObject::GetSize(void)
 Color* CGameObject::GetColor(void)
 {
 	return &m_Color;
+}
+
+bool CGameObject::CollisionCheck(CGameObject* ObjInfo)
+{
+	//left보다 더 왼쪽에 있는 오른쪽
+	float fMyLeft = this->m_Pos.fX - this->m_fSize * 0.5f;
+	float fYourRight = ObjInfo->GetPos()->fX + *ObjInfo->GetSize() * 0.5f;
+	if (fYourRight < fMyLeft)
+		return false;
+	
+	float fMyRight = this->m_Pos.fX + this->m_fSize * 0.5f;
+	float fYourLeft = ObjInfo->GetPos()->fX - *ObjInfo->GetSize() * 0.5f;
+	if (fMyRight < fYourLeft)
+		return false;
+
+	float fMyTop = this->m_Pos.fY + this->m_fSize * 0.5f;
+	float fYourBottom = ObjInfo->GetPos()->fY - *ObjInfo->GetSize() * 0.5f;
+	if (fMyTop < fYourBottom)
+		return false;
+
+	float fMyBottom = this->m_Pos.fY - this->m_fSize * 0.5f;
+	float fYourTop = ObjInfo->GetPos()->fY + *ObjInfo->GetSize() * 0.5f;
+	if (fYourTop < fMyBottom)
+		return false;
+
+	return true;
 }
 
