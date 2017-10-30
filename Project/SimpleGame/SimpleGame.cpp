@@ -52,7 +52,7 @@ void MouseInput(int button, int state, int x, int y)
 		std::cout << "마우스 입력 : 객체 추가합니다." << endl;
 		std::cout << x << "," << y << endl;
 		Position Pos = Position(x - 250, -(y - 250));
-		float fsize = float((rand() % 5 + 2) * 5);
+		float fsize = float((rand() % 5 + 2) * 5) * 3;
 		Color RGBA = Color(1.f ,1.f ,1.f);
 		CGameObject *Obj = new CGameObject(&Pos,&fsize,&RGBA);
 

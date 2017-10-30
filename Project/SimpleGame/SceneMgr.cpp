@@ -13,12 +13,12 @@ void CSceneMgr::Initialize(void)
 		std::cout << "Renderer could not be initialized.. \n";
 	}
 
-	//임의의 위치에 50개의 사각형 생성
-	for (int i = 0; i < 50; ++i)
+	//임의의 위치에 10개의 사각형 생성
+	for (int i = 0; i < MAXCOUNT; ++i)
 	{	//0,0 500,500....
 		Position Pos = Position(rand()  % 500 - 250, rand() % 500 - 250);
 		//Position(x - 250, -(y - 250)); -250~250
-		float fsize = float((rand() % 5 + 2) * 5); //10~35
+		float fsize = float((rand() % 5 + 2) * 5) * 3; //10~35
 		Color RGBA = Color(1.f, 1.f, 1.f);
 		CGameObject *Obj = new CGameObject(&Pos, &fsize, &RGBA);
 
@@ -73,14 +73,28 @@ void CSceneMgr::Render(void)
 
 void CSceneMgr::PushObj(CGameObject * NewObj)
 {
-	//m_Objlist.push_back(NewObj);
-
+	int iObjNum = 0;
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
 		if (m_ObjArr[i] == NULL)
 		{
 			m_ObjArr[i] = NewObj;
 			break;
+		}
+		else
+			iObjNum++;
+	}
+	if (iObjNum == MAXCOUNT)//꽉 차있다.
+	{//가장 늦게 만들어진
+		static int iSecquen = 0;
+		if (m_ObjArr[iSecquen] != NULL)
+		{
+			delete m_ObjArr[iSecquen];
+			m_ObjArr[iSecquen] = NULL;
+
+			m_ObjArr[iSecquen] = NewObj;
+			iSecquen++;
+			iSecquen %= 10;
 		}
 	}
 }

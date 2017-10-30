@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameObject.h"
 
+
 float CGameObject::m_fElapsedTime = 0.f;
 
 CGameObject::CGameObject()
@@ -13,7 +14,7 @@ CGameObject::~CGameObject()
 }
 
 CGameObject::CGameObject(Position* pos, float* size, Color* rgba)
-	: m_Pos(*pos), m_fSize(*size), m_Color(*rgba), m_fSpeed(100.f)
+	: m_Pos(*pos), m_fSize(*size), m_Color(*rgba), m_fSpeed(200.f), m_fLifeTime(100.f)
 {
 	initialize();
 }
@@ -37,6 +38,7 @@ int CGameObject::Update(void)
 	if (m_bCollision && m_Color.fG == 1 && m_Color.fB == 1)
 	{
 		m_Color.fG = 0, m_Color.fB = 0;
+		m_fLifeTime -= m_fElapsedTime * 10;
 	}
 	if (!m_bCollision && m_Color.fG == 0 && m_Color.fB == 0)
 	{
@@ -52,6 +54,10 @@ int CGameObject::Update(void)
 	{
 		m_Dir.fY *= -1;
 	}
+
+	m_fLifeTime -= m_fElapsedTime * 10;
+	if (m_fLifeTime <= 0)
+		return 1;
 
 	return 0;
 }

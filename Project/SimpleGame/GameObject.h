@@ -34,5 +34,6 @@ private:
 
 	bool		m_bCollision;
 	static float		m_fElapsedTime;
+	float		m_fLifeTime;
 };
 
