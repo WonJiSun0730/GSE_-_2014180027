@@ -26,7 +26,7 @@ void RenderScene(void)
 	fPrevTime = timeGetTime();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.f, 0.f, 0.f, 1.0f);
 
 	SceneManager->Update();
 	SceneManager->Render();	
@@ -52,9 +52,7 @@ void MouseInput(int button, int state, int x, int y)
 		std::cout << "마우스 입력 : 객체 추가합니다." << endl;
 		std::cout << x << "," << y << endl;
 		Position Pos = Position(x - 250, -(y - 250));
-		float fsize = float((rand() % 5 + 2) * 5) * 3;
-		Color RGBA = Color(1.f ,1.f ,1.f);
-		CGameObject *Obj = new CGameObject(&Pos,&fsize,&RGBA);
+		CGameObject *Obj = new CGameObject(&Pos, OBJECT_CHARACTER);
 
 		SceneManager->PushObj(Obj);
 	}

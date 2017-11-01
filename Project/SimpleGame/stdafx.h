@@ -12,7 +12,9 @@
 #include <list>
 
 using namespace std;
-#define MAXCOUNT 10
+#define MAXCOUNT 1000
+#define MAXCHAR 100
+
 
 #include "SceneMgr.h"
 

@@ -14,17 +14,18 @@ void CSceneMgr::Initialize(void)
 	}
 
 	//임의의 위치에 10개의 사각형 생성
-	for (int i = 0; i < MAXCOUNT; ++i)
+	for (int i = 0; i < 10; ++i)
 	{	//0,0 500,500....
 		Position Pos = Position(rand()  % 500 - 250, rand() % 500 - 250);
-		//Position(x - 250, -(y - 250)); -250~250
-		float fsize = float((rand() % 5 + 2) * 5) * 3; //10~35
-		Color RGBA = Color(1.f, 1.f, 1.f);
-		CGameObject *Obj = new CGameObject(&Pos, &fsize, &RGBA);
+		CGameObject *Obj = new CGameObject(&Pos, OBJECT_CHARACTER);
 
 		//m_Objlist.push_back(Obj);
 		m_ObjArr[i] = Obj;
 	}
+
+	Position Pos = Position(0.f, 0.f);
+	CGameObject *Obj = new CGameObject(&Pos, OBJECT_BUILDING);
+	m_ObjArr[10] = Obj;
 }
 
 void CSceneMgr::Release(void)
@@ -43,6 +44,7 @@ void CSceneMgr::Release(void)
 
 void CSceneMgr::Update(void)
 {
+	CGameObject* temp = NULL;
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
 		if (m_ObjArr[i] != NULL)
@@ -52,8 +54,18 @@ void CSceneMgr::Update(void)
 				delete m_ObjArr[i];
 				m_ObjArr[i] = NULL;
 			}
+			else if (m_ObjArr[i]->Update() == 2)
+			{
+				temp = new CGameObject(m_ObjArr[i]->GetPos(), OBJECT_BULLET);
+				PushBullet(temp);
+			}
 		}
 	}
+
+	/*if (makeObj)
+	{
+		PushBullet()
+	}*/
 
 	CollisionCheck_Optimi();
 }
@@ -76,25 +88,34 @@ void CSceneMgr::PushObj(CGameObject * NewObj)
 	int iObjNum = 0;
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
-		if (m_ObjArr[i] == NULL)
+		if (m_ObjArr[i] != NULL && m_ObjArr[i]->getObjType() == OBJECT_CHARACTER)
 		{
-			m_ObjArr[i] = NewObj;
-			break;
-		}
-		else
 			iObjNum++;
+		}
 	}
-	if (iObjNum == MAXCOUNT)//꽉 차있다.
-	{//가장 늦게 만들어진
-		static int iSecquen = 0;
-		if (m_ObjArr[iSecquen] != NULL)
-		{
-			delete m_ObjArr[iSecquen];
-			m_ObjArr[iSecquen] = NULL;
 
-			m_ObjArr[iSecquen] = NewObj;
-			iSecquen++;
-			iSecquen %= 10;
+	if (iObjNum < MAXCHAR)
+	{
+		for (int i = 0; i < MAXCOUNT; ++i)
+		{
+			if (m_ObjArr[i] == NULL)
+			{
+				m_ObjArr[i] = NewObj;
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < MAXCOUNT; ++i)
+		{
+			if (m_ObjArr[i] != NULL && m_ObjArr[i]->getObjType() == OBJECT_CHARACTER)
+			{
+				delete m_ObjArr[i];
+				m_ObjArr[i] = NULL;
+				m_ObjArr[i] = NewObj;
+				break;
+			}
 		}
 	}
 }
@@ -135,6 +156,18 @@ void CSceneMgr::SetElapsedTime(float fElapsedTime)
 		if (m_ObjArr[i] != NULL)
 		{
 			m_ObjArr[i]->SetElapsedTime(fElapsedTime);
+			break;
+		}
+	}
+}
+
+void CSceneMgr::PushBullet(CGameObject * NewObj)
+{
+	for (int i = 0; i < MAXCOUNT; ++i)
+	{
+		if (m_ObjArr[i] == NULL)
+		{
+			m_ObjArr[i] = NewObj;
 			break;
 		}
 	}

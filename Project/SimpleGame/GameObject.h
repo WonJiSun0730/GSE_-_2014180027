@@ -6,6 +6,7 @@ public:
 	CGameObject();
 	~CGameObject();
 	CGameObject(Position* pos, float* size, Color* rgba);
+	CGameObject(Position* pos, int ObjType);
 public:
 	virtual void initialize(void);
 	virtual int Update(void);
@@ -24,6 +25,8 @@ public:
 
 	bool CollisionCheck(CGameObject* ObjInfo);
 	void SetElapsedTime(float fElapsedTime);
+
+	int getObjType(void);
 private:
 	Position	m_Pos;
 	float		m_fSize;
@@ -35,5 +38,10 @@ private:
 	bool		m_bCollision;
 	static float		m_fElapsedTime;
 	float		m_fLifeTime;
+
+	int			m_ObjType;
+	float		m_fBulletCoolTime;
+
+
 };
 
