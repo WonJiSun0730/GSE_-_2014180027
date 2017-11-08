@@ -15,7 +15,7 @@ class CSceneMgr
 {
 private:
 	Renderer* m_Renderer;
-	CGameObject* m_ObjArr[MAXCOUNT];
+	CGameObject* m_ObjArr[MAXCOUNT][OBJECT_end];
 
 private:
 	void Initialize(void);
@@ -27,6 +27,7 @@ public:
 	void CollisionCheck_Optimi(void);
 	void SetElapsedTime(float fElapsedTime);
 	void PushBullet(CGameObject* NewObj);
+	void PushArrow(CGameObject* NewObj);
 public:
 	CSceneMgr();
 	~CSceneMgr();

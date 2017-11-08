@@ -20,8 +20,8 @@ CGameObject::CGameObject(Position* pos, float* size, Color* rgba)
 	initialize();
 }
 
-CGameObject::CGameObject(Position * pos, int ObjType)
-	: m_Pos(*pos), m_ObjType(ObjType)
+CGameObject::CGameObject(Position * pos, int ObjType, CGameObject* pMyOwner /*= NULL*/)
+	: m_Pos(*pos), m_ObjType(ObjType), m_pMyOwner(pMyOwner)
 {
 	initialize();
 }
@@ -34,7 +34,8 @@ void CGameObject::initialize(void)
 	m_Dir.fX = cos(rad * 3.141592f / 180.f);
 	m_Dir.fY = sin(rad * 3.141592f / 180.f);
 
-	m_fBulletCoolTime = 0.5;
+	m_fBulletCoolTime = 0.f;
+	m_fArrowCoolTime = 0.f;
 	switch (m_ObjType)
 	{
 	case OBJECT_BUILDING:
@@ -70,8 +71,7 @@ void CGameObject::initialize(void)
 	default:
 		break;
 	}
-
-	m_bCollision = false;
+	m_Color.fAlpha = 1.f;
 }
 
 int CGameObject::Update(void)
@@ -79,15 +79,21 @@ int CGameObject::Update(void)
 	m_Pos.fX += m_fSpeed * m_fElapsedTime * m_Dir.fX;
 	m_Pos.fY += m_fSpeed * m_fElapsedTime * m_Dir.fY;
 
-	if ((m_ObjType == OBJECT_CHARACTER || m_ObjType == OBJECT_BULLET) && m_bCollision)
-		return 1;
-
 	if (m_ObjType == OBJECT_BUILDING)
 	{
-		m_fBulletCoolTime -= m_fElapsedTime;
-		if (m_fBulletCoolTime <= 0)
+		m_fBulletCoolTime += m_fElapsedTime;
+		if (m_fBulletCoolTime >= 0.5f)
 		{
-			m_fBulletCoolTime = 0.5f;
+			m_fBulletCoolTime = 0.f;
+			return 2;
+		}
+	}
+	if (m_ObjType == OBJECT_CHARACTER)
+	{
+		m_fArrowCoolTime += m_fElapsedTime;
+		if (m_fArrowCoolTime >= 0.5f)
+		{
+			m_fArrowCoolTime = 0.f;
 			return 2;
 		}
 	}
@@ -103,7 +109,7 @@ int CGameObject::Update(void)
 	}
 
 	m_fLifeTime -= m_fElapsedTime;
-	if (m_fLifeTime <= 0)
+	if (m_fLifeTime <= 0.f)
 			return 1;
 
 	return 0;
@@ -148,16 +154,6 @@ Color* CGameObject::GetColor(void)
 	return &m_Color;
 }
 
-void CGameObject::setCollision(bool Collstate)
-{
-	m_bCollision = Collstate;
-}
-
-bool CGameObject::getCollision(void)
-{
-	return m_bCollision;
-}
-
 bool CGameObject::CollisionCheck(CGameObject* ObjInfo)
 {
 	//left보다 더 왼쪽에 있는 오른쪽
@@ -181,50 +177,6 @@ bool CGameObject::CollisionCheck(CGameObject* ObjInfo)
 	if (fYourTop < fMyBottom)
 		return false;
 
-	//1. 충돌체크 하는 객체끼리 같은 경우 false
-	if (this->getObjType() == ObjInfo->getObjType())
-		return false;
-	else
-	{
-		if (this->getObjType() == OBJECT_BUILDING)
-		{
-			if (ObjInfo->getObjType() == OBJECT_CHARACTER)
-			{
-				this->m_fLifeTime -= ObjInfo->m_fLifeTime;
-				return true;
-			}
-			else if (ObjInfo->getObjType() == OBJECT_BULLET)
-			{
-				return false;
-			}
-		}
-		else if (this->getObjType() == OBJECT_CHARACTER)
-		{
-			if (ObjInfo->getObjType() == OBJECT_BUILDING)
-			{
-				ObjInfo->m_fLifeTime -= this->m_fLifeTime;
-				return true;
-			}
-			else if (ObjInfo->getObjType() == OBJECT_BULLET)
-			{
-				this->m_fLifeTime -= ObjInfo->m_fLifeTime;
-				return true;
-			}
-		}
-		else if (this->getObjType() == OBJECT_BULLET)
-		{
-			if (ObjInfo->getObjType() == OBJECT_BUILDING)
-			{
-				return false;
-			}
-			else if (ObjInfo->getObjType() == OBJECT_CHARACTER)
-			{
-				ObjInfo->m_fLifeTime -= this->m_fLifeTime;
-				return true;
-			}
-		}
-	}
-
 	return true;
 }
 
@@ -236,4 +188,19 @@ void CGameObject::SetElapsedTime(float fElapsedTime)
 int CGameObject::getObjType(void)
 {
 	return m_ObjType;
+}
+
+float CGameObject::GetLifeTime(void)
+{
+	return m_fLifeTime;
+}
+
+void CGameObject::SetLifeTime(float Lifetime)
+{
+	m_fLifeTime = Lifetime;
+}
+
+CGameObject * CGameObject::getMyOwner(void)
+{
+	return m_pMyOwner;
 }

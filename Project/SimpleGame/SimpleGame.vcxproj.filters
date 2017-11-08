@@ -36,9 +36,6 @@
     <ClInclude Include="targetver.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>02.GameObject</Filter>
     </ClInclude>
@@ -48,6 +45,12 @@
     <ClInclude Include="SceneMgr.h">
       <Filter>03.SceneMgr</Filter>
     </ClInclude>
+    <ClInclude Include="LoadPng.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -56,14 +59,17 @@
     <ClCompile Include="SimpleGame.cpp">
       <Filter>00.Default</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>00.Default</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>02.GameObject</Filter>
     </ClCompile>
     <ClCompile Include="SceneMgr.cpp">
       <Filter>03.SceneMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadPng.cpp">
+      <Filter>00.Default</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>00.Default</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

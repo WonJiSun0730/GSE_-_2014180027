@@ -16,16 +16,15 @@ void CSceneMgr::Initialize(void)
 	//임의의 위치에 10개의 사각형 생성
 	for (int i = 0; i < 10; ++i)
 	{	//0,0 500,500....
-		Position Pos = Position(rand()  % 500 - 250, rand() % 500 - 250);
+		Position Pos = Position(float(rand()  % 500 - 250), float(rand() % 500 - 250));
 		CGameObject *Obj = new CGameObject(&Pos, OBJECT_CHARACTER);
 
-		//m_Objlist.push_back(Obj);
-		m_ObjArr[i] = Obj;
+		m_ObjArr[i][OBJECT_CHARACTER] = Obj;
 	}
 
 	Position Pos = Position(0.f, 0.f);
 	CGameObject *Obj = new CGameObject(&Pos, OBJECT_BUILDING);
-	m_ObjArr[10] = Obj;
+	m_ObjArr[0][OBJECT_BUILDING] = Obj;
 }
 
 void CSceneMgr::Release(void)
@@ -34,10 +33,13 @@ void CSceneMgr::Release(void)
 
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
-		if (m_ObjArr[i] != NULL)
+		for (int j = 0; j < OBJECT_end; ++j)
 		{
-			delete m_ObjArr[i];
-			m_ObjArr[i] = NULL;
+			if (m_ObjArr[i][j] != NULL)
+			{
+				delete m_ObjArr[i][j];
+				m_ObjArr[i][j] = NULL;
+			}
 		}
 	}
 }
@@ -47,25 +49,31 @@ void CSceneMgr::Update(void)
 	CGameObject* temp = NULL;
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
-		if (m_ObjArr[i] != NULL)
+		for (int j = 0; j < OBJECT_end; j++)
 		{
-			if (m_ObjArr[i]->Update() == 1)
+			if (m_ObjArr[i][j] != NULL)
 			{
-				delete m_ObjArr[i];
-				m_ObjArr[i] = NULL;
-			}
-			else if (m_ObjArr[i]->Update() == 2)
-			{
-				temp = new CGameObject(m_ObjArr[i]->GetPos(), OBJECT_BULLET);
-				PushBullet(temp);
+				if (m_ObjArr[i][j]->Update() == 1)
+				{
+					delete m_ObjArr[i][j];
+					m_ObjArr[i][j] = NULL;
+				}
+				else if (m_ObjArr[i][j]->Update() == 2)
+				{//총알 생성
+					if (j == OBJECT_BUILDING)
+					{
+						CGameObject* temp = new CGameObject(m_ObjArr[i][j]->GetPos(), OBJECT_BULLET, m_ObjArr[i][j]);
+						PushBullet(temp);
+					}
+					if (j == OBJECT_CHARACTER)
+					{
+						CGameObject* temp = new CGameObject(m_ObjArr[i][j]->GetPos(), OBJECT_ARROW, m_ObjArr[i][j]);
+						PushArrow(temp);
+					}
+				}
 			}
 		}
 	}
-
-	/*if (makeObj)
-	{
-		PushBullet()
-	}*/
 
 	CollisionCheck_Optimi();
 }
@@ -74,11 +82,15 @@ void CSceneMgr::Render(void)
 {
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
-		if (m_ObjArr[i] != NULL)
+		for (int j = 0; j < OBJECT_end; j++)
 		{
-			m_Renderer->DrawSolidRect(m_ObjArr[i]->GetPos()->fX, m_ObjArr[i]->GetPos()->fY, 0.f,
-				*m_ObjArr[i]->GetSize(),
-				m_ObjArr[i]->GetColor()->fR, m_ObjArr[i]->GetColor()->fG, m_ObjArr[i]->GetColor()->fB, m_ObjArr[i]->GetColor()->fAlpha);
+			if (m_ObjArr[i][j] != NULL)
+			{
+				m_Renderer->DrawSolidRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+					*m_ObjArr[i][j]->GetSize(),
+					m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
+					m_ObjArr[i][j]->GetColor()->fAlpha);
+			}
 		}
 	}
 }
@@ -88,7 +100,7 @@ void CSceneMgr::PushObj(CGameObject * NewObj)
 	int iObjNum = 0;
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
-		if (m_ObjArr[i] != NULL && m_ObjArr[i]->getObjType() == OBJECT_CHARACTER)
+		if (m_ObjArr[i][OBJECT_CHARACTER] != NULL)
 		{
 			iObjNum++;
 		}
@@ -98,9 +110,9 @@ void CSceneMgr::PushObj(CGameObject * NewObj)
 	{
 		for (int i = 0; i < MAXCOUNT; ++i)
 		{
-			if (m_ObjArr[i] == NULL)
+			if (m_ObjArr[i][OBJECT_CHARACTER] == NULL)
 			{
-				m_ObjArr[i] = NewObj;
+				m_ObjArr[i][OBJECT_CHARACTER] = NewObj;
 				break;
 			}
 		}
@@ -109,11 +121,11 @@ void CSceneMgr::PushObj(CGameObject * NewObj)
 	{
 		for (int i = 0; i < MAXCOUNT; ++i)
 		{
-			if (m_ObjArr[i] != NULL && m_ObjArr[i]->getObjType() == OBJECT_CHARACTER)
+			if (m_ObjArr[i][OBJECT_CHARACTER] != NULL)
 			{
-				delete m_ObjArr[i];
-				m_ObjArr[i] = NULL;
-				m_ObjArr[i] = NewObj;
+				delete m_ObjArr[i][OBJECT_CHARACTER];
+				m_ObjArr[i][OBJECT_CHARACTER] = NULL;
+				m_ObjArr[i][OBJECT_CHARACTER] = NewObj;
 				break;
 			}
 		}
@@ -122,29 +134,86 @@ void CSceneMgr::PushObj(CGameObject * NewObj)
 
 void CSceneMgr::CollisionCheck_Optimi(void)
 {
+	//빌딩과 캐릭터
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
-		if (m_ObjArr[i] != NULL)
+		if (m_ObjArr[i][OBJECT_BUILDING] == NULL)
+			break;
+		for (int j = 0; j < MAXCOUNT; ++j)
 		{
-			bool coll = false;
-			for (int j = 0; j < MAXCOUNT; ++j)
+			if (m_ObjArr[j][OBJECT_CHARACTER] == NULL)
+				break;
+
+			if (m_ObjArr[i][OBJECT_BUILDING]->CollisionCheck(m_ObjArr[j][OBJECT_CHARACTER]) &&
+				m_ObjArr[j][OBJECT_CHARACTER]->CollisionCheck(m_ObjArr[i][OBJECT_BUILDING]) )
 			{
-				if (m_ObjArr[j] != NULL)
-				{
-					if (i != j)
-					{
-						if (m_ObjArr[i]->CollisionCheck(m_ObjArr[j]))
-						{
-							coll = true;
-							break;
-						}
-					}
-				}
+				float BulidingLife = m_ObjArr[i][OBJECT_BUILDING]->GetLifeTime() - m_ObjArr[j][OBJECT_CHARACTER]->GetLifeTime();
+				m_ObjArr[i][OBJECT_BUILDING]->SetLifeTime(BulidingLife);
+				m_ObjArr[j][OBJECT_CHARACTER]->SetLifeTime(0.f);
+				break;
 			}
-			if(coll)
-				m_ObjArr[i]->setCollision(true);
-			else
-				m_ObjArr[i]->setCollision(false);
+		}
+	}
+	//총알과 캐릭터
+	for (int i = 0; i < MAXCOUNT; ++i)
+	{
+		if (m_ObjArr[i][OBJECT_BULLET] == NULL)
+			break;
+		for (int j = 0; j < MAXCOUNT; ++j)
+		{
+			if (m_ObjArr[j][OBJECT_CHARACTER] == NULL)
+				break;
+
+			if (m_ObjArr[i][OBJECT_BULLET]->CollisionCheck(m_ObjArr[j][OBJECT_CHARACTER]) &&
+				m_ObjArr[j][OBJECT_CHARACTER]->CollisionCheck(m_ObjArr[i][OBJECT_BULLET]))
+			{
+				//캐릭터 생명력 - 불릿 생명력
+				float CharaLife = m_ObjArr[j][OBJECT_CHARACTER]->GetLifeTime() - m_ObjArr[i][OBJECT_BULLET]->GetLifeTime();
+				m_ObjArr[j][OBJECT_CHARACTER]->SetLifeTime(CharaLife);
+				m_ObjArr[i][OBJECT_BULLET]->SetLifeTime(0.f);
+				break;
+			}
+		}
+	}
+	//빌딩과 화살
+	for (int i = 0; i < MAXCOUNT; ++i)
+	{
+		if (m_ObjArr[i][OBJECT_BUILDING] == NULL)
+			break;
+		for (int j = 0; j < MAXCOUNT; ++j)
+		{
+			if (m_ObjArr[j][OBJECT_ARROW] == NULL)
+				break;
+
+			if (m_ObjArr[i][OBJECT_BUILDING]->CollisionCheck(m_ObjArr[j][OBJECT_ARROW]) &&
+				m_ObjArr[j][OBJECT_ARROW]->CollisionCheck(m_ObjArr[i][OBJECT_BUILDING]))
+			{
+				float BulidingLife = m_ObjArr[i][OBJECT_BUILDING]->GetLifeTime() - m_ObjArr[j][OBJECT_ARROW]->GetLifeTime();
+				m_ObjArr[i][OBJECT_BUILDING]->SetLifeTime(BulidingLife);
+				m_ObjArr[j][OBJECT_ARROW]->SetLifeTime(0.f);
+				break;
+			}
+		}
+	}
+	//플레이어와 화살
+	for (int i = 0; i < MAXCOUNT; ++i)
+	{
+		if (m_ObjArr[i][OBJECT_CHARACTER] == NULL)
+			break;
+		for (int j = 0; j < MAXCOUNT; ++j)
+		{
+			if (m_ObjArr[j][OBJECT_ARROW] == NULL)
+				break;
+
+			if (m_ObjArr[i][OBJECT_CHARACTER]->CollisionCheck(m_ObjArr[j][OBJECT_ARROW]) &&	//캐릭터에 화살이 충돌했니?
+				m_ObjArr[j][OBJECT_ARROW]->CollisionCheck(m_ObjArr[i][OBJECT_CHARACTER]) &&	//화살에 캐릭터가 충돌했니?
+				m_ObjArr[j][OBJECT_ARROW]->getMyOwner() != m_ObjArr[i][OBJECT_CHARACTER])	//화살의 주인이 서로 다르니?
+			{
+				float CharaLife = m_ObjArr[i][OBJECT_CHARACTER]->GetLifeTime() - m_ObjArr[j][OBJECT_ARROW]->GetLifeTime();
+				m_ObjArr[i][OBJECT_CHARACTER]->SetLifeTime(CharaLife);
+				m_ObjArr[j][OBJECT_ARROW]->SetLifeTime(0.f);
+				break;
+			}
 		}
 	}
 }
@@ -153,10 +222,13 @@ void CSceneMgr::SetElapsedTime(float fElapsedTime)
 {
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
-		if (m_ObjArr[i] != NULL)
+		for (int j = 0; j < OBJECT_end; ++j)
 		{
-			m_ObjArr[i]->SetElapsedTime(fElapsedTime);
-			break;
+			if (m_ObjArr[i][j] != NULL)
+			{
+				m_ObjArr[i][j]->SetElapsedTime(fElapsedTime);
+				break;
+			}
 		}
 	}
 }
@@ -165,9 +237,21 @@ void CSceneMgr::PushBullet(CGameObject * NewObj)
 {
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
-		if (m_ObjArr[i] == NULL)
+		if (m_ObjArr[i][OBJECT_BULLET] == NULL)
 		{
-			m_ObjArr[i] = NewObj;
+			m_ObjArr[i][OBJECT_BULLET] = NewObj;
+			break;
+		}
+	}
+}
+
+void CSceneMgr::PushArrow(CGameObject * NewObj)
+{
+	for (int i = 0; i < MAXCOUNT; ++i)
+	{
+		if (m_ObjArr[i][OBJECT_ARROW] == NULL)
+		{
+			m_ObjArr[i][OBJECT_ARROW] = NewObj;
 			break;
 		}
 	}
