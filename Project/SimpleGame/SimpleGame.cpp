@@ -10,7 +10,7 @@ but WITHOUT ANY WARRANTY.
 
 #include "stdafx.h"
 #include <iostream>
-#include "Dependencies\glew.h"
+//#include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 
 #include "GameObject.h"

@@ -25,6 +25,8 @@ void CSceneMgr::Initialize(void)
 	Position Pos = Position(0.f, 0.f);
 	CGameObject *Obj = new CGameObject(&Pos, OBJECT_BUILDING);
 	m_ObjArr[0][OBJECT_BUILDING] = Obj;
+
+	m_ObjTex[OBJECT_BUILDING] = m_Renderer->CreatePngTexture("../Resource/Building.png");
 }
 
 void CSceneMgr::Release(void)
@@ -86,10 +88,21 @@ void CSceneMgr::Render(void)
 		{
 			if (m_ObjArr[i][j] != NULL)
 			{
-				m_Renderer->DrawSolidRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
-					*m_ObjArr[i][j]->GetSize(),
-					m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
-					m_ObjArr[i][j]->GetColor()->fAlpha);
+				if (m_ObjArr[i][j]->getObjType() != OBJECT_BUILDING)
+				{
+					m_Renderer->DrawSolidRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+						*m_ObjArr[i][j]->GetSize(),
+						m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
+						m_ObjArr[i][j]->GetColor()->fAlpha);
+				}
+				else
+				{
+					m_Renderer->DrawTexturedRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+						*m_ObjArr[i][j]->GetSize(),
+						m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
+						m_ObjArr[i][j]->GetColor()->fAlpha,
+						m_ObjTex[OBJECT_BUILDING]);
+				}
 			}
 		}
 	}
@@ -106,7 +119,7 @@ void CSceneMgr::PushObj(CGameObject * NewObj)
 		}
 	}
 
-	if (iObjNum < MAXCHAR)
+	if (iObjNum < MAXCHARNUM)
 	{
 		for (int i = 0; i < MAXCOUNT; ++i)
 		{

@@ -13,9 +13,10 @@
 
 using namespace std;
 #define MAXCOUNT 1000
-#define MAXCHAR 100
+#define MAXCHARNUM 10
 
 
 #include "SceneMgr.h"
+#include "Dependencies\glew.h"
 
 //extern Renderer *g_Renderer;	//

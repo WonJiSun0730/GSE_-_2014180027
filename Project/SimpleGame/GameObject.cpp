@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "GameObject.h"
 
-
 float CGameObject::m_fElapsedTime = 0.f;
 
 CGameObject::CGameObject()

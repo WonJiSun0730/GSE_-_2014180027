@@ -1,4 +1,5 @@
 #pragma once
+#include "Dependencies\glew.h"
 
 class CGameObject;
 class Renderer;
@@ -14,10 +15,6 @@ enum {
 class CSceneMgr
 {
 private:
-	Renderer* m_Renderer;
-	CGameObject* m_ObjArr[MAXCOUNT][OBJECT_end];
-
-private:
 	void Initialize(void);
 	void Release(void);
 public:
@@ -31,5 +28,9 @@ public:
 public:
 	CSceneMgr();
 	~CSceneMgr();
+private:
+	Renderer* m_Renderer;
+	CGameObject* m_ObjArr[MAXCOUNT][OBJECT_end];
+	GLuint m_ObjTex[OBJECT_end];
 };
 
