@@ -19,8 +19,8 @@ CGameObject::CGameObject(Position* pos, float* size, Color* rgba)
 	initialize();
 }
 
-CGameObject::CGameObject(Position * pos, int ObjType, CGameObject* pMyOwner /*= NULL*/)
-	: m_Pos(*pos), m_ObjType(ObjType), m_pMyOwner(pMyOwner)
+CGameObject::CGameObject(Position * pos, int ObjType, int MyTeam /*= Team_Red*/)
+	: m_Pos(*pos), m_ObjType(ObjType), m_MyTeam(MyTeam)
 {
 	initialize();
 }
@@ -38,29 +38,65 @@ void CGameObject::initialize(void)
 	switch (m_ObjType)
 	{
 	case OBJECT_BUILDING:
-		m_Color.fR = 1, m_Color.fG = 1, m_Color.fB = 0;
-		m_fSize = 50;
+	{
+		if (m_MyTeam == Team_Red)
+		{
+			m_Color.fR = 1, m_Color.fG = 0, m_Color.fB = 0;
+		}
+		else if (m_MyTeam == Team_Blue)
+		{
+			m_Color.fR = 0, m_Color.fG = 0, m_Color.fB = 1;
+		}
+		m_fSize = 100.f;
 		m_fSpeed = 0.f;
 		m_fLifeTime = 500.f;
 		break;
+	}
 	case OBJECT_CHARACTER:
-		m_Color.fR = 1, m_Color.fG = 1, m_Color.fB = 1;
+	{
+		if (m_MyTeam == Team_Red)
+		{
+			m_Color.fR = 1, m_Color.fG = 0, m_Color.fB = 0;
+		}
+		else if (m_MyTeam == Team_Blue)
+		{
+			m_Color.fR = 0, m_Color.fG = 0, m_Color.fB = 1;
+		}
 		m_fSize = 10;
 		m_fSpeed = 100.f;
 		m_fLifeTime = 10.f;
 		break;
+	}
 	case OBJECT_BULLET:
-		m_Color.fR = 1, m_Color.fG = 0, m_Color.fB = 0;
+	{
+		if (m_MyTeam == Team_Red)
+		{
+			m_Color.fR = 1, m_Color.fG = 0, m_Color.fB = 0;
+		}
+		else if (m_MyTeam == Team_Blue)
+		{
+			m_Color.fR = 0, m_Color.fG = 0, m_Color.fB = 1;
+		}
 		m_fSize = 2;
 		m_fSpeed = 300.f;
 		m_fLifeTime = 20.f;
 		break;
+	}
 	case OBJECT_ARROW:
-		m_Color.fR = 0, m_Color.fG = 1, m_Color.fB = 0;
+	{
+		if (m_MyTeam == Team_Red)
+		{
+			m_Color.fR = 0.5, m_Color.fG = 0.2, m_Color.fB = 0.7;
+		}
+		else if (m_MyTeam == Team_Blue)
+		{
+			m_Color.fR = 1, m_Color.fG = 1, m_Color.fB = 0;
+		}
 		m_fSize = 2;
 		m_fSpeed = 100.f;
 		m_fLifeTime = 10.f;
 		break;
+	}
 	case OBJECT_end:
 		m_Color.fR = 0.5, m_Color.fG = 0.5, m_Color.fB = 0.5;
 		m_fSize = 1;
@@ -81,7 +117,7 @@ int CGameObject::Update(void)
 	if (m_ObjType == OBJECT_BUILDING)
 	{
 		m_fBulletCoolTime += m_fElapsedTime;
-		if (m_fBulletCoolTime >= 0.5f)
+		if (m_fBulletCoolTime >= 1.0f)
 		{
 			m_fBulletCoolTime = 0.f;
 			return 2;
@@ -90,7 +126,7 @@ int CGameObject::Update(void)
 	if (m_ObjType == OBJECT_CHARACTER)
 	{
 		m_fArrowCoolTime += m_fElapsedTime;
-		if (m_fArrowCoolTime >= 0.5f)
+		if (m_fArrowCoolTime >= 1.0f)
 		{
 			m_fArrowCoolTime = 0.f;
 			return 2;
@@ -98,11 +134,11 @@ int CGameObject::Update(void)
 	}
 
 	//만약 >> 이건 임시...입사각과 반사각을 구하자
-	if (-250.f > m_Pos.fX || m_Pos.fX > 250.f)
+	if (-float(WINSX/2) > m_Pos.fX || m_Pos.fX > float(WINSX / 2))
 	{
 		m_Dir.fX *= -1;
 	}
-	if (-250.f > m_Pos.fY || m_Pos.fY > 250.f)
+	if (-float(WINSY / 2) > m_Pos.fY || m_Pos.fY > float(WINSY / 2))
 	{
 		m_Dir.fY *= -1;
 	}
@@ -189,6 +225,11 @@ int CGameObject::getObjType(void)
 	return m_ObjType;
 }
 
+int CGameObject::getMyTeam(void)
+{
+	return m_MyTeam;
+}
+
 float CGameObject::GetLifeTime(void)
 {
 	return m_fLifeTime;
@@ -197,9 +238,4 @@ float CGameObject::GetLifeTime(void)
 void CGameObject::SetLifeTime(float Lifetime)
 {
 	m_fLifeTime = Lifetime;
-}
-
-CGameObject * CGameObject::getMyOwner(void)
-{
-	return m_pMyOwner;
 }

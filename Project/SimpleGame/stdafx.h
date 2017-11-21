@@ -15,6 +15,8 @@ using namespace std;
 #define MAXCOUNT 1000
 #define MAXCHARNUM 10
 
+#define WINSX 500
+#define WINSY 1000
 
 #include "SceneMgr.h"
 #include "Dependencies\glew.h"

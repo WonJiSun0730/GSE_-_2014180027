@@ -17,8 +17,9 @@ but WITHOUT ANY WARRANTY.
 
 CSceneMgr*	SceneManager = NULL;
 
-DWORD fPrevTime = 0.f;
+DWORD fPrevTime = 0;
 float fElapsedTime = 0.f;
+float fClickCoolTime = 0.f;
 
 void RenderScene(void)
 {
@@ -36,6 +37,11 @@ void RenderScene(void)
 	DWORD fCurTime = timeGetTime();
 
 	fElapsedTime = float(fCurTime - fPrevTime) * 0.001f;
+
+	if (fClickCoolTime > 0.f)
+		fClickCoolTime -= fElapsedTime;
+	else
+		fClickCoolTime = 0.f;
 }
 
 void Idle(void)
@@ -49,12 +55,30 @@ void MouseInput(int button, int state, int x, int y)
 
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{//다운만 체크하면 ui에 중복성이 생긴다...나중에 분기를 나눠라
-		std::cout << "마우스 입력 : 객체 추가합니다." << endl;
-		std::cout << x << "," << y << endl;
-		Position Pos = Position(x - 250, -(y - 250));
-		CGameObject *Obj = new CGameObject(&Pos, OBJECT_CHARACTER);
 
-		SceneManager->PushObj(Obj);
+		if (fClickCoolTime != 0.f)
+		{
+			std::cout << "Cooltime Remain: " << fClickCoolTime << endl;
+			return;
+		}
+		else
+		{
+			fClickCoolTime = 2.0f;
+			if (WINSY / 2 <= y && y <= WINSY)
+			{
+				std::cout << "마우스 입력 : 객체 추가합니다." << endl;
+				std::cout << x << "," << y << endl;
+				Position Pos = Position(x - float(WINSX / 2), -(y - float(WINSY / 2)));
+				CGameObject *Obj = new CGameObject(&Pos, OBJECT_CHARACTER, Team_Blue);
+
+				SceneManager->PushObj(Obj);
+			}
+			else
+			{
+				std::cout << "마우스 입력 : 범위 밖입니다. 객체 추가 못합니다." << endl;
+				std::cout << x << "," << y << endl;
+			}
+		}
 	}
 }
 
@@ -74,7 +98,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(WINSX, WINSY);
 	glutCreateWindow("Game Software Engineering KPU");
 
 	glewInit();

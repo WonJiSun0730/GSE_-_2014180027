@@ -25,6 +25,18 @@
     <Filter Include="03.SceneMgr">
       <UniqueIdentifier>{c2fac814-ee7e-46d5-b283-52520049c7e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\01.Player">
+      <UniqueIdentifier>{85c5503d-16d8-466c-ace7-4a98aab1233a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\02.Building">
+      <UniqueIdentifier>{1de00d7c-7de5-4475-bc5f-22ad452b0732}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\03.Bullet">
+      <UniqueIdentifier>{312972e8-9f46-479f-abef-b8ea16f51249}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\04.Arrow">
+      <UniqueIdentifier>{2af3106c-39aa-4b32-b3a6-cc26066a98b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

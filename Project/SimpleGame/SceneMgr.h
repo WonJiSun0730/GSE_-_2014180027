@@ -12,6 +12,12 @@ enum {
 	OBJECT_end
 }ObjType;
 
+enum {
+	Team_Red,
+	Team_Blue,
+	Team_end
+}Teams;
+
 class CSceneMgr
 {
 private:
@@ -31,6 +37,8 @@ public:
 private:
 	Renderer* m_Renderer;
 	CGameObject* m_ObjArr[MAXCOUNT][OBJECT_end];
-	GLuint m_ObjTex[OBJECT_end];
+	GLuint m_ObjTex[Team_end][OBJECT_end];
+
+	float m_fElapsedTime;
 };
 

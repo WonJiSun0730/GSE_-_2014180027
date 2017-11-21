@@ -7,26 +7,29 @@
 void CSceneMgr::Initialize(void)
 {
 	if(m_Renderer == NULL)
-		m_Renderer = new Renderer(500, 500);
+		m_Renderer = new Renderer(WINSX, WINSY);
 	if (!m_Renderer->IsInitialized())
 	{
 		std::cout << "Renderer could not be initialized.. \n";
 	}
 
-	//임의의 위치에 10개의 사각형 생성
-	for (int i = 0; i < 10; ++i)
-	{	//0,0 500,500....
-		Position Pos = Position(float(rand()  % 500 - 250), float(rand() % 500 - 250));
-		CGameObject *Obj = new CGameObject(&Pos, OBJECT_CHARACTER);
+	//빌딩 각 팀에 3개씩 설치
+	int BuildingNum = 0;
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int j = 0; j < 2; ++j)
+		{
+			Position Pos = Position(-float(WINSX / 2 * 0.8) + float(WINSX / 2 * 0.8) * i, -float(WINSY/2 * 0.9) + float(WINSY * 0.9)  * j);
+			CGameObject *Obj = new CGameObject(&Pos, OBJECT_BUILDING, 1-j);
+			m_ObjArr[BuildingNum][OBJECT_BUILDING] = Obj;
 
-		m_ObjArr[i][OBJECT_CHARACTER] = Obj;
+			BuildingNum++;
+		}
 	}
 
-	Position Pos = Position(0.f, 0.f);
-	CGameObject *Obj = new CGameObject(&Pos, OBJECT_BUILDING);
-	m_ObjArr[0][OBJECT_BUILDING] = Obj;
-
-	m_ObjTex[OBJECT_BUILDING] = m_Renderer->CreatePngTexture("../Resource/Building.png");
+	//현재 다른 리소스는 추가되지 않았음
+	m_ObjTex[Team_Red][OBJECT_BUILDING] = m_Renderer->CreatePngTexture("../Resource/Building_Red.png");
+	m_ObjTex[Team_Blue][OBJECT_BUILDING] = m_Renderer->CreatePngTexture("../Resource/Building_Blue.png");
 }
 
 void CSceneMgr::Release(void)
@@ -64,18 +67,43 @@ void CSceneMgr::Update(void)
 				{//총알 생성
 					if (j == OBJECT_BUILDING)
 					{
-						CGameObject* temp = new CGameObject(m_ObjArr[i][j]->GetPos(), OBJECT_BULLET, m_ObjArr[i][j]);
+						CGameObject* temp = new CGameObject(m_ObjArr[i][j]->GetPos(), OBJECT_BULLET, m_ObjArr[i][j]->getMyTeam());
 						PushBullet(temp);
 					}
 					if (j == OBJECT_CHARACTER)
 					{
-						CGameObject* temp = new CGameObject(m_ObjArr[i][j]->GetPos(), OBJECT_ARROW, m_ObjArr[i][j]);
+						CGameObject* temp = new CGameObject(m_ObjArr[i][j]->GetPos(), OBJECT_ARROW, m_ObjArr[i][j]->getMyTeam());
 						PushArrow(temp);
 					}
 				}
 			}
 		}
 	}
+
+	//북 진영 내부에 Blue팀 추가 - 1초마다...
+	static float Cooltime = 1.f;
+	Cooltime -= m_fElapsedTime;
+	if (Cooltime <= 0.f)
+	{
+		Cooltime = 1.f;
+
+		int temp = 0;
+		for (int k = 0; k < MAXCOUNT; ++k)
+		{
+			if (m_ObjArr[k][OBJECT_CHARACTER] == NULL)
+			{
+				Position Pos = Position(float(rand() % WINSX - WINSX / 2), float(rand() % (WINSY - WINSY / 2) / 2));
+				CGameObject *Obj = new CGameObject(&Pos, OBJECT_CHARACTER, Team_Red);
+
+				m_ObjArr[k][OBJECT_CHARACTER] = Obj;
+				std::cout << k << endl;
+				break;
+			}
+			//현재 객체 5개이상 못만드는 에러가...
+		}
+
+	}
+	
 
 	CollisionCheck_Optimi();
 }
@@ -97,11 +125,22 @@ void CSceneMgr::Render(void)
 				}
 				else
 				{
-					m_Renderer->DrawTexturedRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
-						*m_ObjArr[i][j]->GetSize(),
-						m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
-						m_ObjArr[i][j]->GetColor()->fAlpha,
-						m_ObjTex[OBJECT_BUILDING]);
+					if (m_ObjArr[i][j]->getMyTeam() == Team_Red)
+					{
+						m_Renderer->DrawTexturedRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+							*m_ObjArr[i][j]->GetSize(),
+							m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
+							m_ObjArr[i][j]->GetColor()->fAlpha,
+							m_ObjTex[Team_Red][OBJECT_BUILDING]);
+					}
+					else if (m_ObjArr[i][j]->getMyTeam() == Team_Blue)
+					{
+						m_Renderer->DrawTexturedRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+							*m_ObjArr[i][j]->GetSize(),
+							m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
+							m_ObjArr[i][j]->GetColor()->fAlpha,
+							m_ObjTex[Team_Blue][OBJECT_BUILDING]);
+					}
 				}
 			}
 		}
@@ -158,7 +197,8 @@ void CSceneMgr::CollisionCheck_Optimi(void)
 				break;
 
 			if (m_ObjArr[i][OBJECT_BUILDING]->CollisionCheck(m_ObjArr[j][OBJECT_CHARACTER]) &&
-				m_ObjArr[j][OBJECT_CHARACTER]->CollisionCheck(m_ObjArr[i][OBJECT_BUILDING]) )
+				m_ObjArr[j][OBJECT_CHARACTER]->CollisionCheck(m_ObjArr[i][OBJECT_BUILDING]) &&
+				m_ObjArr[j][OBJECT_CHARACTER]->getMyTeam() != m_ObjArr[i][OBJECT_BUILDING]->getMyTeam())
 			{
 				float BulidingLife = m_ObjArr[i][OBJECT_BUILDING]->GetLifeTime() - m_ObjArr[j][OBJECT_CHARACTER]->GetLifeTime();
 				m_ObjArr[i][OBJECT_BUILDING]->SetLifeTime(BulidingLife);
@@ -178,7 +218,8 @@ void CSceneMgr::CollisionCheck_Optimi(void)
 				break;
 
 			if (m_ObjArr[i][OBJECT_BULLET]->CollisionCheck(m_ObjArr[j][OBJECT_CHARACTER]) &&
-				m_ObjArr[j][OBJECT_CHARACTER]->CollisionCheck(m_ObjArr[i][OBJECT_BULLET]))
+				m_ObjArr[j][OBJECT_CHARACTER]->CollisionCheck(m_ObjArr[i][OBJECT_BULLET]) &&
+				m_ObjArr[j][OBJECT_CHARACTER]->getMyTeam() != m_ObjArr[i][OBJECT_BULLET]->getMyTeam())
 			{
 				//캐릭터 생명력 - 불릿 생명력
 				float CharaLife = m_ObjArr[j][OBJECT_CHARACTER]->GetLifeTime() - m_ObjArr[i][OBJECT_BULLET]->GetLifeTime();
@@ -199,7 +240,8 @@ void CSceneMgr::CollisionCheck_Optimi(void)
 				break;
 
 			if (m_ObjArr[i][OBJECT_BUILDING]->CollisionCheck(m_ObjArr[j][OBJECT_ARROW]) &&
-				m_ObjArr[j][OBJECT_ARROW]->CollisionCheck(m_ObjArr[i][OBJECT_BUILDING]))
+				m_ObjArr[j][OBJECT_ARROW]->CollisionCheck(m_ObjArr[i][OBJECT_BUILDING]) &&
+				m_ObjArr[j][OBJECT_ARROW]->getMyTeam() != m_ObjArr[i][OBJECT_BUILDING]->getMyTeam())
 			{
 				float BulidingLife = m_ObjArr[i][OBJECT_BUILDING]->GetLifeTime() - m_ObjArr[j][OBJECT_ARROW]->GetLifeTime();
 				m_ObjArr[i][OBJECT_BUILDING]->SetLifeTime(BulidingLife);
@@ -220,7 +262,7 @@ void CSceneMgr::CollisionCheck_Optimi(void)
 
 			if (m_ObjArr[i][OBJECT_CHARACTER]->CollisionCheck(m_ObjArr[j][OBJECT_ARROW]) &&	//캐릭터에 화살이 충돌했니?
 				m_ObjArr[j][OBJECT_ARROW]->CollisionCheck(m_ObjArr[i][OBJECT_CHARACTER]) &&	//화살에 캐릭터가 충돌했니?
-				m_ObjArr[j][OBJECT_ARROW]->getMyOwner() != m_ObjArr[i][OBJECT_CHARACTER])	//화살의 주인이 서로 다르니?
+				m_ObjArr[j][OBJECT_ARROW]->getMyTeam() != m_ObjArr[i][OBJECT_CHARACTER]->getMyTeam())	//화살의 주인이 서로 다르니?
 			{
 				float CharaLife = m_ObjArr[i][OBJECT_CHARACTER]->GetLifeTime() - m_ObjArr[j][OBJECT_ARROW]->GetLifeTime();
 				m_ObjArr[i][OBJECT_CHARACTER]->SetLifeTime(CharaLife);
@@ -244,6 +286,8 @@ void CSceneMgr::SetElapsedTime(float fElapsedTime)
 			}
 		}
 	}
+
+	m_fElapsedTime = fElapsedTime;
 }
 
 void CSceneMgr::PushBullet(CGameObject * NewObj)
@@ -271,7 +315,7 @@ void CSceneMgr::PushArrow(CGameObject * NewObj)
 }
 
 CSceneMgr::CSceneMgr()
-	: m_Renderer(NULL)
+	: m_Renderer(NULL), m_fElapsedTime(0.f)
 {
 	Initialize();
 }
