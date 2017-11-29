@@ -30,6 +30,13 @@ void CSceneMgr::Initialize(void)
 	//현재 다른 리소스는 추가되지 않았음
 	m_ObjTex[Team_Red][OBJECT_BUILDING] = m_Renderer->CreatePngTexture("../Resource/Building_Red.png");
 	m_ObjTex[Team_Blue][OBJECT_BUILDING] = m_Renderer->CreatePngTexture("../Resource/Building_Blue.png");
+	//플레이어
+	m_ObjTex[Team_Red][OBJECT_CHARACTER] = m_Renderer->CreatePngTexture("../Resource/char_spritered.png");
+	m_ObjTex[Team_Blue][OBJECT_CHARACTER] = m_Renderer->CreatePngTexture("../Resource/char_spriteblue.png");
+
+	m_BackGround = m_Renderer->CreatePngTexture("../Resource/background.png");
+
+	Cooltime = 1.f;
 }
 
 void CSceneMgr::Release(void)
@@ -81,7 +88,7 @@ void CSceneMgr::Update(void)
 	}
 
 	//북 진영 내부에 Blue팀 추가 - 1초마다...
-	static float Cooltime = 1.f;
+	//static float Cooltime = 1.f;
 	Cooltime -= m_fElapsedTime;
 	if (Cooltime <= 0.f)
 	{
@@ -95,7 +102,6 @@ void CSceneMgr::Update(void)
 				Position Pos = Position(float(rand() % WINSX - WINSX / 2), float(rand() % (WINSY - WINSY / 2) / 2));
 				CGameObject *Obj = new CGameObject(&Pos, OBJECT_CHARACTER, Team_Red);
 
-				m_ObjArr[k][OBJECT_CHARACTER] = NULL;
 				m_ObjArr[k][OBJECT_CHARACTER] = Obj;
 				std::cout << k << endl;
 				break;
@@ -115,62 +121,66 @@ void CSceneMgr::Update(void)
 
 void CSceneMgr::Render(void)
 {
+	m_Renderer->DrawTexturedRect(0.f,0.f, 0.f, 1000, 1.0, 1.0, 1.0, 1.0, m_BackGround, 9 / 10.f);
+
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
 		for (int j = 0; j < OBJECT_end; j++)
 		{
 			if (m_ObjArr[i][j] != NULL)
 			{
-				if (m_ObjArr[i][j]->getObjType() != OBJECT_BUILDING)
+				float flevel = 0.f;
+				if (m_ObjArr[i][j]->getObjType() == OBJECT_ARROW || m_ObjArr[i][j]->getObjType() == OBJECT_BULLET)
 				{
-					float flevel = 0.f;
-					if (m_ObjArr[i][j]->getObjType() == OBJECT_CHARACTER)
-					{
-						m_Renderer->DrawSolidRectGauge(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY + *m_ObjArr[i][j]->GetSize() / 2.f + 4, 0.f,
-							*m_ObjArr[i][j]->GetSize(), 3.f,
-							m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
-							m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjArr[i][j]->GetLifeTime(), flevel);
-
-						flevel = float(LEVEL_CHAR) / 10.f;
-					}
-					else
-						flevel = float(LEVEL_BANDA) / 10.f;
-
-						m_Renderer->DrawSolidRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
-							*m_ObjArr[i][j]->GetSize(),
-							m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
-							m_ObjArr[i][j]->GetColor()->fAlpha, flevel);
-
+					m_Renderer->DrawSolidRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+						*m_ObjArr[i][j]->GetSize(),
+						m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
+						m_ObjArr[i][j]->GetColor()->fAlpha, flevel);
 				}
 				else
 				{
+					if(m_ObjArr[i][j]->getObjType() == OBJECT_BUILDING)
+						flevel = LEVEL_BUILD / 10.f;
+					else if(m_ObjArr[i][j]->getObjType() == OBJECT_CHARACTER)
+						flevel = LEVEL_CHAR / 10.f;
 					if (m_ObjArr[i][j]->getMyTeam() == Team_Red)
 					{
-						m_Renderer->DrawTexturedRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+						if (m_ObjArr[i][j]->getObjType() == OBJECT_BUILDING)
+							m_Renderer->DrawTexturedRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
 							*m_ObjArr[i][j]->GetSize(),
 							m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
 							m_ObjArr[i][j]->GetColor()->fAlpha,
-							m_ObjTex[Team_Red][OBJECT_BUILDING], float(LEVEL_BUILD)/10.f);
+							m_ObjTex[Team_Red][j], flevel);
+						else
+							m_Renderer->DrawTexturedRectSeq(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+								*m_ObjArr[i][j]->GetSize(), m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
+								m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjTex[Team_Red][j], 0, 0, 4, 1, flevel);
 
-						m_Renderer->DrawSolidRectGauge(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY + *m_ObjArr[i][j]->GetSize() / 2.f + 4, 0.f,
+							m_Renderer->DrawSolidRectGauge(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY + *m_ObjArr[i][j]->GetSize() / 2.f + 4, 0.f,
 							*m_ObjArr[i][j]->GetSize(), 3.f,
-							1.f , 0.f , 0.f,
-							m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjArr[i][j]->GetLifeTime(), float(LEVEL_BUILD) / 10.f);
+							1.f, 0.f, 0.f,
+							m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjArr[i][j]->GetLifeTime(), flevel);
 					}
 					else if (m_ObjArr[i][j]->getMyTeam() == Team_Blue)
 					{
-						m_Renderer->DrawTexturedRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+						if (m_ObjArr[i][j]->getObjType() == OBJECT_BUILDING)
+							m_Renderer->DrawTexturedRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
 							*m_ObjArr[i][j]->GetSize(),
 							m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
 							m_ObjArr[i][j]->GetColor()->fAlpha,
-							m_ObjTex[Team_Blue][OBJECT_BUILDING], float(LEVEL_BUILD) / 10.f);
+							m_ObjTex[Team_Blue][j], flevel);
+						else
+							m_Renderer->DrawTexturedRectSeq(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+							*m_ObjArr[i][j]->GetSize(), m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
+							m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjTex[Team_Blue][j], 0, 0, 4, 1, flevel);
 
 						m_Renderer->DrawSolidRectGauge(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY + *m_ObjArr[i][j]->GetSize() / 2.f + 4, 0.f,
 							*m_ObjArr[i][j]->GetSize(), 3.f,
 							0.f, 0.f, 1.f,
-							m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjArr[i][j]->GetLifeTime(), float(LEVEL_BUILD) / 10.f);
+							m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjArr[i][j]->GetLifeTime(), flevel);
 					}
 				}
+				
 			}
 		}
 	}

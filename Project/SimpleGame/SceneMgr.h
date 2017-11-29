@@ -22,6 +22,7 @@ enum {
 	LEVEL_BUILD = 1,
 	LEVEL_CHAR,
 	LEVEL_BANDA,
+	LEVEL_BACKG,
 	LEVEL_end
 }RenderLev;
 
@@ -46,7 +47,11 @@ private:
 	Renderer* m_Renderer;
 	CGameObject* m_ObjArr[MAXCOUNT][OBJECT_end];
 	GLuint m_ObjTex[Team_end][OBJECT_end];
+	
+	GLuint m_BackGround;
 
 	float m_fElapsedTime;
+
+	float Cooltime;
 };
 

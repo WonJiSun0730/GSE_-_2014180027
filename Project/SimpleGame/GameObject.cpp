@@ -54,14 +54,7 @@ void CGameObject::initialize(void)
 	}
 	case OBJECT_CHARACTER:
 	{
-		if (m_MyTeam == Team_Red)
-		{
-			m_Color.fR = 1, m_Color.fG = 0, m_Color.fB = 0;
-		}
-		else if (m_MyTeam == Team_Blue)
-		{
-			m_Color.fR = 0, m_Color.fG = 0, m_Color.fB = 1;
-		}
+		m_Color.fR = 1, m_Color.fG = 1, m_Color.fB = 1;
 		m_fSize = 30;
 		m_fSpeed = 100.f;
 		m_fLifeTime = 10.f;
