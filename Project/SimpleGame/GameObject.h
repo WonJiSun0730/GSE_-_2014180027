@@ -29,6 +29,7 @@ public:
 	float GetLifeTime(void);
 	void SetLifeTime(float Lifetime);
 
+	int GetSpriteX(void);
 private:
 	int			m_ObjType;
 	int			m_MyTeam;
@@ -45,5 +46,10 @@ private:
 
 	float		m_fBulletCoolTime;
 	float		m_fArrowCoolTime;
+
+	int			m_iSpriteMaxX;
+	int			m_iSpriteX;
+
+	float		m_fSpriteCoolTime;
 };
 

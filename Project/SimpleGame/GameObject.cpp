@@ -35,6 +35,10 @@ void CGameObject::initialize(void)
 
 	m_fBulletCoolTime = 0.f;
 	m_fArrowCoolTime = 0.f;
+	m_iSpriteMaxX = 0.f;
+	m_iSpriteX = 0.f;
+	m_fSpriteCoolTime = 0.f;
+
 	switch (m_ObjType)
 	{
 	case OBJECT_BUILDING:
@@ -55,9 +59,11 @@ void CGameObject::initialize(void)
 	case OBJECT_CHARACTER:
 	{
 		m_Color.fR = 1, m_Color.fG = 1, m_Color.fB = 1;
-		m_fSize = 30;
+		m_fSize = 50;
 		m_fSpeed = 100.f;
 		m_fLifeTime = 10.f;
+		m_iSpriteMaxX = 4;
+		m_fSpriteCoolTime = 0.7;
 		break;
 	}
 	case OBJECT_BULLET:
@@ -107,6 +113,17 @@ int CGameObject::Update(void)
 	m_Pos.fX += m_fSpeed * m_fElapsedTime * m_Dir.fX;
 	m_Pos.fY += m_fSpeed * m_fElapsedTime * m_Dir.fY;
 
+	if (m_ObjType == OBJECT_CHARACTER)
+	{
+		m_fSpriteCoolTime -= m_fElapsedTime;
+		if (m_fSpriteCoolTime <= 0.f)
+		{
+			m_fSpriteCoolTime = 0.3;
+			m_iSpriteX++;
+		}
+		m_iSpriteX %= m_iSpriteMaxX;
+	}
+
 	if (m_ObjType == OBJECT_BUILDING)
 	{
 		m_fBulletCoolTime += m_fElapsedTime;
@@ -139,6 +156,8 @@ int CGameObject::Update(void)
 	m_fLifeTime -= m_fElapsedTime;
 	if (m_fLifeTime <= 0.f)
 			return 1;
+
+
 
 	return 0;
 }
@@ -231,4 +250,9 @@ float CGameObject::GetLifeTime(void)
 void CGameObject::SetLifeTime(float Lifetime)
 {
 	m_fLifeTime = Lifetime;
+}
+
+int CGameObject::GetSpriteX(void)
+{
+	return m_iSpriteX;
 }

@@ -154,7 +154,7 @@ void CSceneMgr::Render(void)
 						else
 							m_Renderer->DrawTexturedRectSeq(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
 								*m_ObjArr[i][j]->GetSize(), m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
-								m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjTex[Team_Red][j], 0, 0, 4, 1, flevel);
+								m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjTex[Team_Red][j], m_ObjArr[i][j]->GetSpriteX(), 0, 4, 1, flevel);
 
 							m_Renderer->DrawSolidRectGauge(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY + *m_ObjArr[i][j]->GetSize() / 2.f + 4, 0.f,
 							*m_ObjArr[i][j]->GetSize(), 3.f,
@@ -172,7 +172,7 @@ void CSceneMgr::Render(void)
 						else
 							m_Renderer->DrawTexturedRectSeq(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
 							*m_ObjArr[i][j]->GetSize(), m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
-							m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjTex[Team_Blue][j], 0, 0, 4, 1, flevel);
+							m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjTex[Team_Blue][j], m_ObjArr[i][j]->GetSpriteX(), 0, 4, 1, flevel);
 
 						m_Renderer->DrawSolidRectGauge(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY + *m_ObjArr[i][j]->GetSize() / 2.f + 4, 0.f,
 							*m_ObjArr[i][j]->GetSize(), 3.f,
