@@ -41,11 +41,11 @@ void CGameObject::initialize(void)
 	{
 		if (m_MyTeam == Team_Red)
 		{
-			m_Color.fR = 1, m_Color.fG = 0, m_Color.fB = 0;
+			m_Color.fR = 1, m_Color.fG = 1, m_Color.fB = 1;
 		}
 		else if (m_MyTeam == Team_Blue)
 		{
-			m_Color.fR = 0, m_Color.fG = 0, m_Color.fB = 1;
+			m_Color.fR = 1, m_Color.fG = 1, m_Color.fB = 1;
 		}
 		m_fSize = 100.f;
 		m_fSpeed = 0.f;
@@ -62,7 +62,7 @@ void CGameObject::initialize(void)
 		{
 			m_Color.fR = 0, m_Color.fG = 0, m_Color.fB = 1;
 		}
-		m_fSize = 10;
+		m_fSize = 30;
 		m_fSpeed = 100.f;
 		m_fLifeTime = 10.f;
 		break;
@@ -77,7 +77,7 @@ void CGameObject::initialize(void)
 		{
 			m_Color.fR = 0, m_Color.fG = 0, m_Color.fB = 1;
 		}
-		m_fSize = 2;
+		m_fSize = 4;
 		m_fSpeed = 300.f;
 		m_fLifeTime = 20.f;
 		break;
@@ -92,7 +92,7 @@ void CGameObject::initialize(void)
 		{
 			m_Color.fR = 1, m_Color.fG = 1, m_Color.fB = 0;
 		}
-		m_fSize = 2;
+		m_fSize = 4;
 		m_fSpeed = 100.f;
 		m_fLifeTime = 10.f;
 		break;

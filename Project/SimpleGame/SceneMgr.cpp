@@ -19,7 +19,7 @@ void CSceneMgr::Initialize(void)
 	{
 		for (int j = 0; j < 2; ++j)
 		{
-			Position Pos = Position(-float(WINSX / 2 * 0.8) + float(WINSX / 2 * 0.8) * i, -float(WINSY/2 * 0.9) + float(WINSY * 0.9)  * j);
+			Position Pos = Position(-float(WINSX / 2 * 0.8) + float(WINSX / 2 * 0.8) * i, -float(WINSY/2 * 0.8) + float(WINSY * 0.8)  * j);
 			CGameObject *Obj = new CGameObject(&Pos, OBJECT_BUILDING, 1-j);
 			m_ObjArr[BuildingNum][OBJECT_BUILDING] = Obj;
 
@@ -95,9 +95,14 @@ void CSceneMgr::Update(void)
 				Position Pos = Position(float(rand() % WINSX - WINSX / 2), float(rand() % (WINSY - WINSY / 2) / 2));
 				CGameObject *Obj = new CGameObject(&Pos, OBJECT_CHARACTER, Team_Red);
 
+				m_ObjArr[k][OBJECT_CHARACTER] = NULL;
 				m_ObjArr[k][OBJECT_CHARACTER] = Obj;
 				std::cout << k << endl;
 				break;
+			}
+			else
+			{
+				std::cout <<":"<< k << endl;
 			}
 			//현재 객체 5개이상 못만드는 에러가...
 		}
@@ -118,10 +123,24 @@ void CSceneMgr::Render(void)
 			{
 				if (m_ObjArr[i][j]->getObjType() != OBJECT_BUILDING)
 				{
-					m_Renderer->DrawSolidRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
-						*m_ObjArr[i][j]->GetSize(),
-						m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
-						m_ObjArr[i][j]->GetColor()->fAlpha);
+					float flevel = 0.f;
+					if (m_ObjArr[i][j]->getObjType() == OBJECT_CHARACTER)
+					{
+						m_Renderer->DrawSolidRectGauge(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY + *m_ObjArr[i][j]->GetSize() / 2.f + 4, 0.f,
+							*m_ObjArr[i][j]->GetSize(), 3.f,
+							m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
+							m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjArr[i][j]->GetLifeTime(), flevel);
+
+						flevel = float(LEVEL_CHAR) / 10.f;
+					}
+					else
+						flevel = float(LEVEL_BANDA) / 10.f;
+
+						m_Renderer->DrawSolidRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+							*m_ObjArr[i][j]->GetSize(),
+							m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
+							m_ObjArr[i][j]->GetColor()->fAlpha, flevel);
+
 				}
 				else
 				{
@@ -131,7 +150,12 @@ void CSceneMgr::Render(void)
 							*m_ObjArr[i][j]->GetSize(),
 							m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
 							m_ObjArr[i][j]->GetColor()->fAlpha,
-							m_ObjTex[Team_Red][OBJECT_BUILDING]);
+							m_ObjTex[Team_Red][OBJECT_BUILDING], float(LEVEL_BUILD)/10.f);
+
+						m_Renderer->DrawSolidRectGauge(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY + *m_ObjArr[i][j]->GetSize() / 2.f + 4, 0.f,
+							*m_ObjArr[i][j]->GetSize(), 3.f,
+							1.f , 0.f , 0.f,
+							m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjArr[i][j]->GetLifeTime(), float(LEVEL_BUILD) / 10.f);
 					}
 					else if (m_ObjArr[i][j]->getMyTeam() == Team_Blue)
 					{
@@ -139,7 +163,12 @@ void CSceneMgr::Render(void)
 							*m_ObjArr[i][j]->GetSize(),
 							m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
 							m_ObjArr[i][j]->GetColor()->fAlpha,
-							m_ObjTex[Team_Blue][OBJECT_BUILDING]);
+							m_ObjTex[Team_Blue][OBJECT_BUILDING], float(LEVEL_BUILD) / 10.f);
+
+						m_Renderer->DrawSolidRectGauge(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY + *m_ObjArr[i][j]->GetSize() / 2.f + 4, 0.f,
+							*m_ObjArr[i][j]->GetSize(), 3.f,
+							0.f, 0.f, 1.f,
+							m_ObjArr[i][j]->GetColor()->fAlpha, m_ObjArr[i][j]->GetLifeTime(), float(LEVEL_BUILD) / 10.f);
 					}
 				}
 			}
@@ -200,9 +229,9 @@ void CSceneMgr::CollisionCheck_Optimi(void)
 				m_ObjArr[j][OBJECT_CHARACTER]->CollisionCheck(m_ObjArr[i][OBJECT_BUILDING]) &&
 				m_ObjArr[j][OBJECT_CHARACTER]->getMyTeam() != m_ObjArr[i][OBJECT_BUILDING]->getMyTeam())
 			{
-				float BulidingLife = m_ObjArr[i][OBJECT_BUILDING]->GetLifeTime() - m_ObjArr[j][OBJECT_CHARACTER]->GetLifeTime();
-				m_ObjArr[i][OBJECT_BUILDING]->SetLifeTime(BulidingLife);
-				m_ObjArr[j][OBJECT_CHARACTER]->SetLifeTime(0.f);
+				//float BulidingLife = m_ObjArr[i][OBJECT_BUILDING]->GetLifeTime() - m_ObjArr[j][OBJECT_CHARACTER]->GetLifeTime();
+				//m_ObjArr[i][OBJECT_BUILDING]->SetLifeTime(BulidingLife);
+				//m_ObjArr[j][OBJECT_CHARACTER]->SetLifeTime(0.f);
 				break;
 			}
 		}
@@ -246,6 +275,27 @@ void CSceneMgr::CollisionCheck_Optimi(void)
 				float BulidingLife = m_ObjArr[i][OBJECT_BUILDING]->GetLifeTime() - m_ObjArr[j][OBJECT_ARROW]->GetLifeTime();
 				m_ObjArr[i][OBJECT_BUILDING]->SetLifeTime(BulidingLife);
 				m_ObjArr[j][OBJECT_ARROW]->SetLifeTime(0.f);
+				break;
+			}
+		}
+	}
+	//빌딩과 총알
+	for (int i = 0; i < MAXCOUNT; ++i)
+	{
+		if (m_ObjArr[i][OBJECT_BUILDING] == NULL)
+			break;
+		for (int j = 0; j < MAXCOUNT; ++j)
+		{
+			if (m_ObjArr[j][OBJECT_BULLET] == NULL)
+				break;
+
+			if (m_ObjArr[i][OBJECT_BUILDING]->CollisionCheck(m_ObjArr[j][OBJECT_BULLET]) &&
+				m_ObjArr[j][OBJECT_BULLET]->CollisionCheck(m_ObjArr[i][OBJECT_BUILDING]) &&
+				m_ObjArr[j][OBJECT_BULLET]->getMyTeam() != m_ObjArr[i][OBJECT_BUILDING]->getMyTeam())
+			{
+				float BulidingLife = m_ObjArr[i][OBJECT_BUILDING]->GetLifeTime() - m_ObjArr[j][OBJECT_BULLET]->GetLifeTime();
+				m_ObjArr[i][OBJECT_BUILDING]->SetLifeTime(BulidingLife);
+				m_ObjArr[j][OBJECT_BULLET]->SetLifeTime(0.f);
 				break;
 			}
 		}

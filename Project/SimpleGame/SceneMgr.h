@@ -18,6 +18,14 @@ enum {
 	Team_end
 }Teams;
 
+enum {
+	LEVEL_BUILD = 1,
+	LEVEL_CHAR,
+	LEVEL_BANDA,
+	LEVEL_end
+}RenderLev;
+
+
 class CSceneMgr
 {
 private:
