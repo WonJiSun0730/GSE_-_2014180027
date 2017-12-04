@@ -35,6 +35,7 @@ void CSceneMgr::Initialize(void)
 	m_ObjTex[Team_Blue][OBJECT_CHARACTER] = m_Renderer->CreatePngTexture("../Resource/char_spriteblue.png");
 
 	m_BackGround = m_Renderer->CreatePngTexture("../Resource/background.png");
+	m_ParticleTex = m_Renderer->CreatePngTexture("../Resource/particle_shine.png");
 
 	Cooltime = 1.f;
 }
@@ -104,7 +105,7 @@ void CSceneMgr::Update(void)
 
 				m_ObjArr[k][OBJECT_CHARACTER] = Obj;
 				std::cout << k << endl;
-				break;
+				return;
 			}
 			else
 			{
@@ -113,6 +114,11 @@ void CSceneMgr::Update(void)
 			//현재 객체 5개이상 못만드는 에러가...
 		}
 
+		/*if (m_ObjArr[i][OBJECT_CHARACTER] == NULL)
+		{
+			m_ObjArr[i][OBJECT_CHARACTER] = NewObj;
+			break;
+		}*/
 	}
 	
 
@@ -123,6 +129,8 @@ void CSceneMgr::Render(void)
 {
 	m_Renderer->DrawTexturedRect(0.f,0.f, 0.f, 1000, 1.0, 1.0, 1.0, 1.0, m_BackGround, 9 / 10.f);
 
+	static float ftempTime = 0.f;
+	ftempTime += m_fElapsedTime;
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
 		for (int j = 0; j < OBJECT_end; j++)
@@ -132,6 +140,11 @@ void CSceneMgr::Render(void)
 				float flevel = 0.f;
 				if (m_ObjArr[i][j]->getObjType() == OBJECT_ARROW || m_ObjArr[i][j]->getObjType() == OBJECT_BULLET)
 				{
+					
+					if (m_ObjArr[i][j]->getObjType() == OBJECT_BULLET)
+						m_Renderer->DrawParticle(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f, 10, 1, 1, 1, 1,
+							-m_ObjArr[i][j]->GetDir()->fX, -m_ObjArr[i][j]->GetDir()->fY, m_ParticleTex, ftempTime);
+
 					m_Renderer->DrawSolidRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
 						*m_ObjArr[i][j]->GetSize(),
 						m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
@@ -239,9 +252,9 @@ void CSceneMgr::CollisionCheck_Optimi(void)
 				m_ObjArr[j][OBJECT_CHARACTER]->CollisionCheck(m_ObjArr[i][OBJECT_BUILDING]) &&
 				m_ObjArr[j][OBJECT_CHARACTER]->getMyTeam() != m_ObjArr[i][OBJECT_BUILDING]->getMyTeam())
 			{
-				//float BulidingLife = m_ObjArr[i][OBJECT_BUILDING]->GetLifeTime() - m_ObjArr[j][OBJECT_CHARACTER]->GetLifeTime();
-				//m_ObjArr[i][OBJECT_BUILDING]->SetLifeTime(BulidingLife);
-				//m_ObjArr[j][OBJECT_CHARACTER]->SetLifeTime(0.f);
+				float BulidingLife = m_ObjArr[i][OBJECT_BUILDING]->GetLifeTime() - m_ObjArr[j][OBJECT_CHARACTER]->GetLifeTime();
+				m_ObjArr[i][OBJECT_BUILDING]->SetLifeTime(BulidingLife);
+				m_ObjArr[j][OBJECT_CHARACTER]->SetLifeTime(0.f);
 				break;
 			}
 		}

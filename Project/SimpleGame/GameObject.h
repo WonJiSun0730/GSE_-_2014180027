@@ -30,6 +30,8 @@ public:
 	void SetLifeTime(float Lifetime);
 
 	int GetSpriteX(void);
+
+	Position* GetDir(void);
 private:
 	int			m_ObjType;
 	int			m_MyTeam;

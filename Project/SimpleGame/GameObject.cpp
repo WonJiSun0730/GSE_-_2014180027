@@ -157,8 +157,6 @@ int CGameObject::Update(void)
 	if (m_fLifeTime <= 0.f)
 			return 1;
 
-
-
 	return 0;
 }
 
@@ -255,4 +253,9 @@ void CGameObject::SetLifeTime(float Lifetime)
 int CGameObject::GetSpriteX(void)
 {
 	return m_iSpriteX;
+}
+
+Position * CGameObject::GetDir(void)
+{
+	return &m_Dir;
 }

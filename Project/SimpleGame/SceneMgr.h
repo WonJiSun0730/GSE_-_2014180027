@@ -49,6 +49,7 @@ private:
 	GLuint m_ObjTex[Team_end][OBJECT_end];
 	
 	GLuint m_BackGround;
+	GLuint m_ParticleTex;
 
 	float m_fElapsedTime;
 
