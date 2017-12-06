@@ -3,6 +3,7 @@
 
 class CGameObject;
 class Renderer;
+class Sound;
 
 enum {
 	OBJECT_BUILDING,
@@ -45,6 +46,8 @@ public:
 	~CSceneMgr();
 private:
 	Renderer* m_Renderer;
+	Sound* m_Sound;
+
 	CGameObject* m_ObjArr[MAXCOUNT][OBJECT_end];
 	GLuint m_ObjTex[Team_end][OBJECT_end];
 	
@@ -54,5 +57,7 @@ private:
 	float m_fElapsedTime;
 
 	float Cooltime;
+
+	int m_BGMusic;
 };
 

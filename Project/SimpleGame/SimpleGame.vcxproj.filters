@@ -63,6 +63,9 @@
     <ClInclude Include="Renderer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>00.Default</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -81,6 +84,9 @@
       <Filter>00.Default</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
+      <Filter>00.Default</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
       <Filter>00.Default</Filter>
     </ClCompile>
   </ItemGroup>

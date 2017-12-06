@@ -2,6 +2,7 @@
 #include "SceneMgr.h"
 #include "GameObject.h"
 #include "Renderer.h"
+#include "Sound.h"
 
 
 void CSceneMgr::Initialize(void)
@@ -38,6 +39,12 @@ void CSceneMgr::Initialize(void)
 	m_ParticleTex = m_Renderer->CreatePngTexture("../Resource/particle_shine.png");
 
 	Cooltime = 1.f;
+
+	m_Sound = new Sound;
+
+	m_BGMusic = m_Sound->CreateSound("./Dependencies/SoundSamples/MF-W-90.XM");
+
+	m_Sound->PlaySound(m_BGMusic, true, 0.2f);
 }
 
 void CSceneMgr::Release(void)
@@ -128,6 +135,8 @@ void CSceneMgr::Update(void)
 void CSceneMgr::Render(void)
 {
 	m_Renderer->DrawTexturedRect(0.f,0.f, 0.f, 1000, 1.0, 1.0, 1.0, 1.0, m_BackGround, 9 / 10.f);
+	m_Renderer->DrawText(0, 0, GLUT_BITMAP_HELVETICA_18, 0, 0, 1, "RED");
+	m_Renderer->DrawText(0, -20, GLUT_BITMAP_HELVETICA_18, 1, 0, 0, "BLUE");
 
 	static float ftempTime = 0.f;
 	ftempTime += m_fElapsedTime;
@@ -140,7 +149,6 @@ void CSceneMgr::Render(void)
 				float flevel = 0.f;
 				if (m_ObjArr[i][j]->getObjType() == OBJECT_ARROW || m_ObjArr[i][j]->getObjType() == OBJECT_BULLET)
 				{
-					
 					if (m_ObjArr[i][j]->getObjType() == OBJECT_BULLET)
 						m_Renderer->DrawParticle(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f, 10, 1, 1, 1, 1,
 							-m_ObjArr[i][j]->GetDir()->fX, -m_ObjArr[i][j]->GetDir()->fY, m_ParticleTex, ftempTime);
@@ -388,7 +396,7 @@ void CSceneMgr::PushArrow(CGameObject * NewObj)
 }
 
 CSceneMgr::CSceneMgr()
-	: m_Renderer(NULL), m_fElapsedTime(0.f)
+	: m_Renderer(NULL), m_fElapsedTime(0.f), m_BGMusic(NULL)
 {
 	Initialize();
 }
