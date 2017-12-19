@@ -20,6 +20,7 @@ CSceneMgr*	SceneManager = NULL;
 DWORD fPrevTime = 0;
 float fElapsedTime = 0.f;
 float fClickCoolTime = 0.f;
+float fSpownCoolTime = 2.f;
 
 void RenderScene(void)
 {
@@ -32,6 +33,8 @@ void RenderScene(void)
 	SceneManager->Update();
 	SceneManager->Render();	
 
+
+
 	glutSwapBuffers();
 
 	DWORD fCurTime = timeGetTime();
@@ -42,6 +45,19 @@ void RenderScene(void)
 		fClickCoolTime -= fElapsedTime;
 	else
 		fClickCoolTime = 0.f;
+
+	//객체5개넘게몬만드는에러해결...
+	if (fSpownCoolTime > 0.f)
+		fSpownCoolTime -= fElapsedTime;
+	else
+	{
+		fSpownCoolTime = 3.f;
+		
+		Position Pos = Position(float(rand() % WINSX - WINSX / 2), float(rand() % (WINSY - WINSY / 2) / 2));
+		CGameObject *Obj = new CGameObject(&Pos, OBJECT_CHARACTER, Team_Red);
+
+		SceneManager->PushObj(Obj);
+	}
 }
 
 void Idle(void)

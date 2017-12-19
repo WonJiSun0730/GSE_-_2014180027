@@ -94,39 +94,6 @@ void CSceneMgr::Update(void)
 			}
 		}
 	}
-
-	//북 진영 내부에 Blue팀 추가 - 1초마다...
-	//static float Cooltime = 1.f;
-	Cooltime -= m_fElapsedTime;
-	if (Cooltime <= 0.f)
-	{
-		Cooltime = 1.f;
-
-		int temp = 0;
-		for (int k = 0; k < MAXCOUNT; ++k)
-		{
-			if (m_ObjArr[k][OBJECT_CHARACTER] == NULL)
-			{
-				Position Pos = Position(float(rand() % WINSX - WINSX / 2), float(rand() % (WINSY - WINSY / 2) / 2));
-				CGameObject *Obj = new CGameObject(&Pos, OBJECT_CHARACTER, Team_Red);
-
-				m_ObjArr[k][OBJECT_CHARACTER] = Obj;
-				std::cout << k << endl;
-				return;
-			}
-			else
-			{
-				std::cout <<":"<< k << endl;
-			}
-			//현재 객체 5개이상 못만드는 에러가...
-		}
-
-		/*if (m_ObjArr[i][OBJECT_CHARACTER] == NULL)
-		{
-			m_ObjArr[i][OBJECT_CHARACTER] = NewObj;
-			break;
-		}*/
-	}
 	
 
 	CollisionCheck_Optimi();
@@ -134,12 +101,13 @@ void CSceneMgr::Update(void)
 
 void CSceneMgr::Render(void)
 {
+	Cooltime += m_fElapsedTime;
+	m_Renderer->DrawParticleClimate( 0, 0, 0, 1, 1, 1, 1, 1, -0.1, -0.1, m_ParticleTex, Cooltime, 0.01);
+
 	m_Renderer->DrawTexturedRect(0.f,0.f, 0.f, 1000, 1.0, 1.0, 1.0, 1.0, m_BackGround, 9 / 10.f);
 	m_Renderer->DrawText(0, 0, GLUT_BITMAP_HELVETICA_18, 0, 0, 1, "RED");
 	m_Renderer->DrawText(0, -20, GLUT_BITMAP_HELVETICA_18, 1, 0, 0, "BLUE");
 
-	static float ftempTime = 0.f;
-	ftempTime += m_fElapsedTime;
 	for (int i = 0; i < MAXCOUNT; ++i)
 	{
 		for (int j = 0; j < OBJECT_end; j++)
@@ -151,12 +119,12 @@ void CSceneMgr::Render(void)
 				{
 					if (m_ObjArr[i][j]->getObjType() == OBJECT_BULLET)
 						m_Renderer->DrawParticle(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f, 10, 1, 1, 1, 1,
-							-m_ObjArr[i][j]->GetDir()->fX, -m_ObjArr[i][j]->GetDir()->fY, m_ParticleTex, ftempTime);
+							-m_ObjArr[i][j]->GetDir()->fX, -m_ObjArr[i][j]->GetDir()->fY, m_ParticleTex, m_ObjArr[i][j]->GetParticleTime(), (LEVEL_BANDA+ 0.01) / 10.f);
 
 					m_Renderer->DrawSolidRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
 						*m_ObjArr[i][j]->GetSize(),
 						m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
-						m_ObjArr[i][j]->GetColor()->fAlpha, flevel);
+						m_ObjArr[i][j]->GetColor()->fAlpha, LEVEL_BANDA/10.f);
 				}
 				else
 				{
@@ -167,11 +135,13 @@ void CSceneMgr::Render(void)
 					if (m_ObjArr[i][j]->getMyTeam() == Team_Red)
 					{
 						if (m_ObjArr[i][j]->getObjType() == OBJECT_BUILDING)
-							m_Renderer->DrawTexturedRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
-							*m_ObjArr[i][j]->GetSize(),
-							m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
-							m_ObjArr[i][j]->GetColor()->fAlpha,
-							m_ObjTex[Team_Red][j], flevel);
+						{
+							/*m_Renderer->DrawTexturedRect(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
+								*m_ObjArr[i][j]->GetSize(),
+								m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
+								m_ObjArr[i][j]->GetColor()->fAlpha,
+								m_ObjTex[Team_Red][j], flevel);*/
+						}
 						else
 							m_Renderer->DrawTexturedRectSeq(m_ObjArr[i][j]->GetPos()->fX, m_ObjArr[i][j]->GetPos()->fY, 0.f,
 								*m_ObjArr[i][j]->GetSize(), m_ObjArr[i][j]->GetColor()->fR, m_ObjArr[i][j]->GetColor()->fG, m_ObjArr[i][j]->GetColor()->fB,
@@ -218,7 +188,7 @@ void CSceneMgr::PushObj(CGameObject * NewObj)
 		}
 	}
 
-	if (iObjNum < MAXCHARNUM)
+	if (iObjNum < MAXCOUNT)
 	{
 		for (int i = 0; i < MAXCOUNT; ++i)
 		{

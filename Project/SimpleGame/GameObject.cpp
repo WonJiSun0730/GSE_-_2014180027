@@ -61,7 +61,7 @@ void CGameObject::initialize(void)
 		m_Color.fR = 1, m_Color.fG = 1, m_Color.fB = 1;
 		m_fSize = 50;
 		m_fSpeed = 100.f;
-		m_fLifeTime = 10.f;
+		m_fLifeTime = 100.f;
 		m_iSpriteMaxX = 4;
 		m_fSpriteCoolTime = 0.7;
 		break;
@@ -77,7 +77,7 @@ void CGameObject::initialize(void)
 			m_Color.fR = 0, m_Color.fG = 0, m_Color.fB = 1;
 		}
 		m_fSize = 4;
-		m_fSpeed = 300.f;
+		m_fSpeed = 50.f;
 		m_fLifeTime = 20.f;
 		break;
 	}
@@ -92,7 +92,7 @@ void CGameObject::initialize(void)
 			m_Color.fR = 1, m_Color.fG = 1, m_Color.fB = 0;
 		}
 		m_fSize = 4;
-		m_fSpeed = 100.f;
+		m_fSpeed = 50.f;
 		m_fLifeTime = 10.f;
 		break;
 	}
@@ -106,6 +106,8 @@ void CGameObject::initialize(void)
 		break;
 	}
 	m_Color.fAlpha = 1.f;
+
+	m_fParticleTime = 0.f;
 }
 
 int CGameObject::Update(void)
@@ -127,7 +129,7 @@ int CGameObject::Update(void)
 	if (m_ObjType == OBJECT_BUILDING)
 	{
 		m_fBulletCoolTime += m_fElapsedTime;
-		if (m_fBulletCoolTime >= 1.0f)
+		if (m_fBulletCoolTime >= 3.0f)
 		{
 			m_fBulletCoolTime = 0.f;
 			return 2;
@@ -141,6 +143,11 @@ int CGameObject::Update(void)
 			m_fArrowCoolTime = 0.f;
 			return 2;
 		}
+	}
+
+	if (m_ObjType == OBJECT_BULLET)
+	{
+		m_fParticleTime += m_fElapsedTime * 0.5;
 	}
 
 	//만약 >> 이건 임시...입사각과 반사각을 구하자
@@ -258,4 +265,9 @@ int CGameObject::GetSpriteX(void)
 Position * CGameObject::GetDir(void)
 {
 	return &m_Dir;
+}
+
+float CGameObject::GetParticleTime(void)
+{
+	return m_fParticleTime;
 }

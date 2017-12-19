@@ -32,6 +32,8 @@ public:
 	int GetSpriteX(void);
 
 	Position* GetDir(void);
+
+	float	GetParticleTime(void);
 private:
 	int			m_ObjType;
 	int			m_MyTeam;
@@ -53,5 +55,7 @@ private:
 	int			m_iSpriteX;
 
 	float		m_fSpriteCoolTime;
+
+	float		m_fParticleTime;
 };
 
